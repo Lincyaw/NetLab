@@ -12,9 +12,13 @@ int main(int argc, char *argv[]) {
     int proto;
     int str_len;
     char buffer[BUFFER_MAX];
+    // 以太网头
     char *ethernet_head;
     char *ip_head;
     unsigned char *p;
+    // Raw socket套接字用于在 MAC 层上收发原始数据帧，这样就允许用户在用户空间
+    // 完成 MAC 之上各个层次的实现，进而可以对整个网络的数据进行监控和控制，给开发
+    // 或测试带来了极大的便利性。
     if ((fd = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) < 0) {
         printf("error create raw socket\n");
         return -1;
@@ -28,7 +32,7 @@ int main(int argc, char *argv[]) {
             printf("error when recv msg \n");
             return -1;
         }
-
+        
         ethernet_head = buffer;
         p = ethernet_head;
         printf("Dst MAC address: %.2x:%02x:%02x:%02x:%02x:%02x\n",
