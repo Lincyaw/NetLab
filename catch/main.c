@@ -27,7 +27,6 @@ int main(int argc, char *argv[]) {
         if (str_len < 42) {
             printf("error when recv msg \n");
             return -1;
-
         }
 
         ethernet_head = buffer;
