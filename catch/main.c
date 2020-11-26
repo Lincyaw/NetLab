@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
                p[0], p[1], p[2], p[3], p[4], p[5]);
         typeOfFrame = ethernet_head + 12;
         printf("type of frame:\t\t\t\t%.2x%02x\n", typeOfFrame[0], typeOfFrame[1]);
-        int temp = (int)typeOfFrame[0] << 8 + (int)(typeOfFrame[1]);
+        int temp = ((int)typeOfFrame[0] << 8) + (int)(typeOfFrame[1]);
         switch (temp)
         {
         case 0x0800:
