@@ -67,6 +67,23 @@ void buf_copy(buf_t *dst, buf_t *src)
     memcpy(dst->payload, src->payload, BUF_MAX_LEN);
 }
 
+void printBuf(buf_t *buf){
+
+    printf("\n{\nbuf.len = %d\n",buf->len);
+    printf("buf.data = \n\t");
+    unsigned char *pointer = buf->data;
+    for(int i = 0;i<buf->len;i++){
+        printf("%02x ",pointer[i]);
+        if((i+1)%4==0){
+            printf(" ");
+        }
+        if((i+1)%8==0 ){
+            printf("\n\t");
+        }
+    }
+    printf("\n}\n");
+}
+
 /**
  * @brief 计算16位校验和
  *        1. 把首部看成以 16 位为单位的数字组成，依次进行二进制求和

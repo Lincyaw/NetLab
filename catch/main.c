@@ -44,10 +44,10 @@ int main(int argc, char *argv[])
         ethernet_head = buffer;
         p = ethernet_head;
         printf("Dst MAC address: %.2x:%02x:%02x:%02x:%02x:%02x\n",
-               p[6], p[7], p[8], p[9], p[10], p[11]);
-
-        printf("Src MAC address: %.2x:%02x:%02x:%02x:%02x:%02x\n",
                p[0], p[1], p[2], p[3], p[4], p[5]);
+        printf("Src MAC address: %.2x:%02x:%02x:%02x:%02x:%02x\n",
+               p[6], p[7], p[8], p[9], p[10], p[11]);
+        
         typeOfFrame = ethernet_head + 12;
         printf("type of frame:\t\t\t\t%.2x%02x\n", typeOfFrame[0], typeOfFrame[1]);
         int temp = ((int)typeOfFrame[0] << 8) + (int)(typeOfFrame[1]);
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
             printf("Flags:\t\t\t\t\t0x%x\n", flags);
 
             int fragmentOffset = ((int)p[6] & 0xf << 8) + (int)p[7];
-            printf("Fragment Offset:\t\t\t0x%x\n", flags);
+            printf("Fragment Offset:\t\t\t0x%x\n", fragmentOffset);
 
             int lifeTime = (int)p[8];
             printf("LifeTime:\t\t\t\t0x%x\n", lifeTime);
@@ -104,8 +104,8 @@ int main(int argc, char *argv[])
             int headerCheckSum = ((int)p[10] << 8) + (int)p[11];
             printf("Header Check Sum:\t\t\t0x%x\n", headerCheckSum);
 
-            printf("Dst IP:\t\t\t\t\t%d.%d.%d.%d\n", p[12], p[13], p[14], p[15]);
-            printf("Src IP:\t\t\t\t\t%d.%d.%d.%d\n", p[16], p[17], p[18], p[19]);
+            printf("Src IP:\t\t\t\t\t%d.%d.%d.%d\n", p[12], p[13], p[14], p[15]);
+            printf("Dst IP:\t\t\t\t\t%d.%d.%d.%d\n", p[16], p[17], p[18], p[19]);
 
             break;
         case 0x0806:
