@@ -67,17 +67,21 @@ void buf_copy(buf_t *dst, buf_t *src)
     memcpy(dst->payload, src->payload, BUF_MAX_LEN);
 }
 
-void printBuf(buf_t *buf){
+void printBuf(buf_t *buf)
+{
 
-    printf("\n{\nbuf.len = %d\n",buf->len);
+    printf("\n{\nbuf.len = %d\n", buf->len);
     printf("buf.data = \n\t");
     unsigned char *pointer = buf->data;
-    for(int i = 0;i<buf->len;i++){
-        printf("%02x ",pointer[i]);
-        if((i+1)%4==0){
+    for (int i = 0; i < buf->len; i++)
+    {
+        printf("%02x ", pointer[i]);
+        if ((i + 1) % 4 == 0)
+        {
             printf(" ");
         }
-        if((i+1)%8==0 ){
+        if ((i + 1) % 8 == 0)
+        {
             printf("\n\t");
         }
     }
@@ -100,5 +104,4 @@ void printBuf(buf_t *buf){
 uint16_t checksum16(uint16_t *buf, int len)
 {
     // TODO
-        
 }

@@ -18,7 +18,7 @@ void ethernet_in(buf_t *buf)
 {
     // TODO
     unsigned char *typeOfFrame = buf->data;
-    typeOfFrame+=12;
+    typeOfFrame += 12;
     int temp = ((int)typeOfFrame[0] << 8) + (int)(typeOfFrame[1]);
     switch (temp)
     {
@@ -31,7 +31,7 @@ void ethernet_in(buf_t *buf)
         arp_in(buf);
         break;
     default:
-        printf(" None of your ass.\n");
+        break;
     }
 }
 
@@ -48,24 +48,20 @@ void ethernet_out(buf_t *buf, const uint8_t *mac, net_protocol_t protocol)
 {
     // TODO
     // printBuf(buf);
-    buf_add_header(buf,14);
+    buf_add_header(buf, 14);
     uint8_t *p = buf->data;
-    for(int i = 0;i<6;i++){
+    for (int i = 0; i < 6; i++)
+    {
         p[i] = mac[i];
     }
-    for(int i = 6;i<12;i++){
-        p[i] = (uint8_t)net_if_mac[i-6];
+    for (int i = 6; i < 12; i++)
+    {
+        p[i] = (uint8_t)net_if_mac[i - 6];
     }
-    p[6] = 0x11;
-    p[7] = 0x22;
-    p[8] = 0x33;
-    p[9] = 0x44;
-    p[10] = 0x55;
-    p[11] = 0x66;
     // printf("protocol = %x\n",protocol);
-    p[12] = (protocol&0xff00) >>8;
-    p[13] = protocol&0xff;
-    
+    p[12] = (protocol & 0xff00) >> 8;
+    p[13] = protocol & 0xff;
+
     // printBuf(buf);
 
     driver_send(buf);
