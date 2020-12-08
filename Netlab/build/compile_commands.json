@@ -1,0 +1,47 @@
+[
+{
+  "directory": "/home/nn/NetLab/Netlab/build",
+  "command": "/bin/gcc-9  -I/home/nn/NetLab/Netlab/./include -I/home/nn/NetLab/Netlab/./pcap  -g   -o CMakeFiles/main.dir/src/arp.c.o   -c /home/nn/NetLab/Netlab/src/arp.c",
+  "file": "/home/nn/NetLab/Netlab/src/arp.c"
+},
+{
+  "directory": "/home/nn/NetLab/Netlab/build",
+  "command": "/bin/gcc-9  -I/home/nn/NetLab/Netlab/./include -I/home/nn/NetLab/Netlab/./pcap  -g   -o CMakeFiles/main.dir/src/driver.c.o   -c /home/nn/NetLab/Netlab/src/driver.c",
+  "file": "/home/nn/NetLab/Netlab/src/driver.c"
+},
+{
+  "directory": "/home/nn/NetLab/Netlab/build",
+  "command": "/bin/gcc-9  -I/home/nn/NetLab/Netlab/./include -I/home/nn/NetLab/Netlab/./pcap  -g   -o CMakeFiles/main.dir/src/ethernet.c.o   -c /home/nn/NetLab/Netlab/src/ethernet.c",
+  "file": "/home/nn/NetLab/Netlab/src/ethernet.c"
+},
+{
+  "directory": "/home/nn/NetLab/Netlab/build",
+  "command": "/bin/gcc-9  -I/home/nn/NetLab/Netlab/./include -I/home/nn/NetLab/Netlab/./pcap  -g   -o CMakeFiles/main.dir/src/icmp.c.o   -c /home/nn/NetLab/Netlab/src/icmp.c",
+  "file": "/home/nn/NetLab/Netlab/src/icmp.c"
+},
+{
+  "directory": "/home/nn/NetLab/Netlab/build",
+  "command": "/bin/gcc-9  -I/home/nn/NetLab/Netlab/./include -I/home/nn/NetLab/Netlab/./pcap  -g   -o CMakeFiles/main.dir/src/ip.c.o   -c /home/nn/NetLab/Netlab/src/ip.c",
+  "file": "/home/nn/NetLab/Netlab/src/ip.c"
+},
+{
+  "directory": "/home/nn/NetLab/Netlab/build",
+  "command": "/bin/gcc-9  -I/home/nn/NetLab/Netlab/./include -I/home/nn/NetLab/Netlab/./pcap  -g   -o CMakeFiles/main.dir/src/main.c.o   -c /home/nn/NetLab/Netlab/src/main.c",
+  "file": "/home/nn/NetLab/Netlab/src/main.c"
+},
+{
+  "directory": "/home/nn/NetLab/Netlab/build",
+  "command": "/bin/gcc-9  -I/home/nn/NetLab/Netlab/./include -I/home/nn/NetLab/Netlab/./pcap  -g   -o CMakeFiles/main.dir/src/net.c.o   -c /home/nn/NetLab/Netlab/src/net.c",
+  "file": "/home/nn/NetLab/Netlab/src/net.c"
+},
+{
+  "directory": "/home/nn/NetLab/Netlab/build",
+  "command": "/bin/gcc-9  -I/home/nn/NetLab/Netlab/./include -I/home/nn/NetLab/Netlab/./pcap  -g   -o CMakeFiles/main.dir/src/udp.c.o   -c /home/nn/NetLab/Netlab/src/udp.c",
+  "file": "/home/nn/NetLab/Netlab/src/udp.c"
+},
+{
+  "directory": "/home/nn/NetLab/Netlab/build",
+  "command": "/bin/gcc-9  -I/home/nn/NetLab/Netlab/./include -I/home/nn/NetLab/Netlab/./pcap  -g   -o CMakeFiles/main.dir/src/utils.c.o   -c /home/nn/NetLab/Netlab/src/utils.c",
+  "file": "/home/nn/NetLab/Netlab/src/utils.c"
+}
+]

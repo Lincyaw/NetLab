@@ -45,7 +45,6 @@ arp_buf_t arp_buf;
 void arp_update(uint8_t *ip, uint8_t *mac, arp_state_t state)
 {
     // TODO
-
 }
 
 /**
@@ -73,7 +72,13 @@ static uint8_t *arp_lookup(uint8_t *ip)
 static void arp_req(uint8_t *target_ip)
 {
     // TODO
-
+    buf_init(&txbuf, sizeof(arp_pkt_t));
+    arp_pkt_t *head = (arp_pkt_t *)(txbuf.data);
+    *head = arp_init_pkt;
+    head->opcode = swap16(ARP_REQUEST);
+    memcpy(head->target_ip, target_ip, NET_IP_LEN);
+    arp_update(target_ip, net_board_mac, ARP_PENDING);
+    ethernet_out(&txbuf, net_board_mac, NET_PROTOCOL_ARP);
 }
 
 /**
@@ -96,7 +101,6 @@ static void arp_req(uint8_t *target_ip)
 void arp_in(buf_t *buf)
 {
     // TODO
-    
 }
 
 /**
@@ -113,7 +117,6 @@ void arp_in(buf_t *buf)
 void arp_out(buf_t *buf, uint8_t *ip, net_protocol_t protocol)
 {
     // TODO
-
 }
 
 /**
@@ -122,8 +125,15 @@ void arp_out(buf_t *buf, uint8_t *ip, net_protocol_t protocol)
  */
 void arp_init()
 {
+    // ARP 表初始化，将 arp_table 中的 state 都初始化为 ARP_INVALID
     for (int i = 0; i < ARP_MAX_ENTRY; i++)
         arp_table[i].state = ARP_INVALID;
+    // 初始化 arp_buf 的 valid 为0
     arp_buf.valid = 0;
+    /*
+    在系统启用网卡时，首先向网络上发送无回报 ARP 包（ARP announcemennt），
+    即广播包，告诉所有人自己的 IP 地址和 MAC 地址。在实验代码中，调用 arp_req
+    函数来发送一个无回报 ARP 包
+    */
     arp_req(net_if_ip);
 }
