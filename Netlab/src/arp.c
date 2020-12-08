@@ -7,7 +7,13 @@
 
 /**
  * @brief 初始的arp包
- * 
+ *  uint16_t hw_type, pro_type;      // 硬件类型和协议类型   1
+    uint8_t hw_len, pro_len;         // 硬件地址长 + 协议地址长 1
+    uint16_t opcode;                 // 请求/响应              ?
+    uint8_t sender_mac[NET_MAC_LEN]; // 发送包硬件地址          1
+    uint8_t sender_ip[NET_IP_LEN];   // 发送包协议地址          1
+    uint8_t target_mac[NET_MAC_LEN]; // 接收方硬件地址          1
+    uint8_t target_ip[NET_IP_LEN];   // 接收方协议地址          ?
  */
 static const arp_pkt_t arp_init_pkt = {
     .hw_type = swap16(ARP_HW_ETHER),
@@ -101,6 +107,32 @@ static void arp_req(uint8_t *target_ip)
 void arp_in(buf_t *buf)
 {
     // TODO
+    arp_pkt_t *header = buf->data;
+    if (header->hw_len != NET_MAC_LEN ||
+        header->hw_type != swap16(ARP_HW_ETHER) ||
+        (header->opcode != swap16(ARP_REPLY) && header->opcode != swap16(ARP_REQUEST)) ||
+        header->pro_len != NET_IP_LEN ||
+        header->pro_type != swap16(NET_PROTOCOL_IP))
+    {
+        fprintf(stderr, "Error of arp header\n");
+        exit(-1);
+    }
+    arp_update(header->sender_ip, header->sender_mac, ARP_VALID);
+    if (arp_buf.valid && header->opcode == swap16(ARP_REPLY))
+    {
+        uint8_t *mac;
+        if ((mac = arp_lookup(arp_buf.ip)) != NULL)
+        {
+            arp_buf.valid = 0;
+            ethernet_out(&(arp_buf.buf), mac, arp_buf.protocol);
+        }
+    }
+    else
+    {
+        if (header->opcode = swap16(ARP_REQUEST) && memcmp(header->target_ip, net_if_ip, NET_IP_LEN) == 0)
+        {
+        }
+    }
 }
 
 /**
@@ -117,6 +149,27 @@ void arp_in(buf_t *buf)
 void arp_out(buf_t *buf, uint8_t *ip, net_protocol_t protocol)
 {
     // TODO
+    uint8_t *mac;
+    if ((mac = arp_lookup(ip)) != NULL) // 根据 IP 地址来查找 ARP 表 (arp_table)。
+    {
+        ethernet_out(buf, mac, protocol); //. 如果能找到该 IP 地址对应的 MAC 地址，则将数据包直接发送给以太网层，即
+                                          //调用 ethernet_out 函数直接发出去。
+    }
+    else
+    {
+        /**
+         * 如果没有找到对应的 MAC 地址，则调用 arp_req 函数，发一个 ARP request
+         * 报文。注意，需要将来自 IP 层的数据包缓存到 arp_buf 的 buf 中，等待 ARP
+         * request 报文的响应，即 arp_in 函数能接收到这条 ARP request 报文的应答
+         * 报文。
+         **/
+        arp_req(ip);
+        arp_buf.buf = *buf;
+        memcpy(arp_buf.ip, ip, NET_IP_LEN);
+        arp_buf.protocol = protocol;
+        arp_buf.valid = 1;
+    }
+    printBuf(buf);
 }
 
 /**
