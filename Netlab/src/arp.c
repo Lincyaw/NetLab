@@ -51,6 +51,42 @@ arp_buf_t arp_buf;
 void arp_update(uint8_t *ip, uint8_t *mac, arp_state_t state)
 {
     // TODO
+    time_t curTime;
+    time(&curTime);
+    for (int i = 0; i < ARP_MAX_ENTRY; i++)
+    {
+        if (arp_table[i].timeout <= curTime)
+        {
+            arp_table[i].state = ARP_INVALID;
+        }
+    }
+
+    for (int i = 0; i < ARP_MAX_ENTRY; i++)
+    {
+        if (arp_table[i].state == ARP_INVALID)
+        {
+            //如果有，则将arp_update()函数传递进来的新的IP、MAC信息插入到表中，
+            //并记录超时时间，更改表项的状态为有效。
+            memcpy(arp_table[i].ip, ip, NET_IP_LEN);
+            memcpy(arp_table[i].mac, mac, NET_MAC_LEN);
+            arp_table[i].timeout = curTime + ARP_TIMEOUT_SEC;
+            arp_table[i].state = state;
+            return;
+        }
+    }
+    int flag;
+    for (int i = 0; i < ARP_MAX_ENTRY; i++)
+    {
+        if (arp_table[i].timeout < curTime)
+        {
+            curTime = arp_table[i].timeout;
+            flag = i;
+        }
+    }
+    memcpy(arp_table[flag].ip, ip, NET_IP_LEN);
+    memcpy(arp_table[flag].mac, mac, NET_MAC_LEN);
+    arp_table[flag].state = state;
+    arp_table[flag].timeout = curTime + ARP_TIMEOUT_SEC;
 }
 
 /**
@@ -83,7 +119,7 @@ static void arp_req(uint8_t *target_ip)
     *head = arp_init_pkt;
     head->opcode = swap16(ARP_REQUEST);
     memcpy(head->target_ip, target_ip, NET_IP_LEN);
-    arp_update(target_ip, net_board_mac, ARP_PENDING);
+    // printBuf(&txbuf);
     ethernet_out(&txbuf, net_board_mac, NET_PROTOCOL_ARP);
 }
 
@@ -107,7 +143,7 @@ static void arp_req(uint8_t *target_ip)
 void arp_in(buf_t *buf)
 {
     // TODO
-    arp_pkt_t *header = buf->data;
+    arp_pkt_t *header = (arp_pkt_t *)buf->data;
     if (header->hw_len != NET_MAC_LEN ||
         header->hw_type != swap16(ARP_HW_ETHER) ||
         (header->opcode != swap16(ARP_REPLY) && header->opcode != swap16(ARP_REQUEST)) ||
@@ -115,22 +151,31 @@ void arp_in(buf_t *buf)
         header->pro_type != swap16(NET_PROTOCOL_IP))
     {
         fprintf(stderr, "Error of arp header\n");
-        exit(-1);
+        return;
     }
     arp_update(header->sender_ip, header->sender_mac, ARP_VALID);
-    if (arp_buf.valid && header->opcode == swap16(ARP_REPLY))
+    if (arp_buf.valid)
     {
         uint8_t *mac;
         if ((mac = arp_lookup(arp_buf.ip)) != NULL)
         {
             arp_buf.valid = 0;
+            // printBuf(&(arp_buf.buf));
             ethernet_out(&(arp_buf.buf), mac, arp_buf.protocol);
         }
     }
     else
     {
-        if (header->opcode = swap16(ARP_REQUEST) && memcmp(header->target_ip, net_if_ip, NET_IP_LEN) == 0)
+        if (header->opcode == swap16(ARP_REQUEST) && memcmp(header->target_ip, net_if_ip, NET_IP_LEN) == 0)
         {
+            buf_init(&txbuf, sizeof(arp_pkt_t));
+            arp_pkt_t *sender = (arp_pkt_t *)txbuf.data;
+            *sender = arp_init_pkt;
+            sender->opcode = swap16(ARP_REPLY);
+            memcpy(sender->target_ip, header->sender_ip, NET_IP_LEN);
+            memcpy(sender->target_mac, header->sender_mac, NET_MAC_LEN);
+            // printBuf(&txbuf);
+            ethernet_out(&txbuf, sender->target_mac, NET_PROTOCOL_ARP);
         }
     }
 }
@@ -152,8 +197,10 @@ void arp_out(buf_t *buf, uint8_t *ip, net_protocol_t protocol)
     uint8_t *mac;
     if ((mac = arp_lookup(ip)) != NULL) // 根据 IP 地址来查找 ARP 表 (arp_table)。
     {
-        ethernet_out(buf, mac, protocol); //. 如果能找到该 IP 地址对应的 MAC 地址，则将数据包直接发送给以太网层，即
-                                          //调用 ethernet_out 函数直接发出去。
+        // printBuf(buf);
+        //如果能找到该 IP 地址对应的 MAC 地址，则将数据包直接发送给以太网层，即
+        //调用 ethernet_out 函数直接发出去。
+        ethernet_out(buf, mac, protocol);
     }
     else
     {
@@ -169,7 +216,7 @@ void arp_out(buf_t *buf, uint8_t *ip, net_protocol_t protocol)
         arp_buf.protocol = protocol;
         arp_buf.valid = 1;
     }
-    printBuf(buf);
+    // printBuf(buf);
 }
 
 /**

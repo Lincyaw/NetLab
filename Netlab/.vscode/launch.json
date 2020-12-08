@@ -8,7 +8,7 @@
             "name": "gcc-9 - 生成和调试活动文件",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/test/eth_in_test",
+            "program": "${workspaceFolder}/test/arp_test",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/test",
