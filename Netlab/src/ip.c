@@ -23,8 +23,39 @@
  */
 void ip_in(buf_t *buf)
 {
-    // TODO 
-
+    ip_hdr_t *header = (ip_hdr_t *)buf->data;
+    if (header->version != IP_VERSION_4 ||
+        header->hdr_len * IP_HDR_LEN_PER_BYTE != sizeof(ip_hdr_t) ||
+        header->total_len > 65535)
+    {
+        fprintf(stderr, "Error of ip header.\n");
+        return;
+    }
+    uint16_t tempChecksum = header->hdr_checksum;
+    header->hdr_checksum = 0;
+    if (checksum16((uint16_t *)header, sizeof(ip_hdr_t)) != tempChecksum)
+    {
+        fprintf(stderr, "Error in checksum.\n");
+        return;
+    }
+    if (memcmp(header->dest_ip, net_if_ip, NET_IP_LEN) != 0)
+    {
+        return;
+    }
+    switch (header->protocol)
+    {
+    case NET_PROTOCOL_IP:
+        buf_remove_header(buf, sizeof(ip_hdr_t));
+        icmp_in(buf, header->src_ip);
+        break;
+    case NET_PROTOCOL_UDP:
+        buf_remove_header(buf, sizeof(ip_hdr_t));
+        udp_in(buf, header->src_ip);
+        break;
+    default:
+        icmp_unreachable(buf, header->src_ip, ICMP_CODE_PORT_UNREACH);
+        break;
+    }
 }
 
 /**
@@ -44,7 +75,21 @@ void ip_in(buf_t *buf)
 void ip_fragment_out(buf_t *buf, uint8_t *ip, net_protocol_t protocol, int id, uint16_t offset, int mf)
 {
     // TODO
-    
+    buf_add_header(buf, sizeof(ip_hdr_t));
+    ip_hdr_t *head = (ip_hdr_t *)buf->data;
+    head->hdr_len = sizeof(ip_hdr_t) / IP_HDR_LEN_PER_BYTE;
+    head->version = IP_VERSION_4;
+    head->tos = 0;
+    head->total_len = swap16(buf->len);
+    head->id = swap16(id);
+    head->flags_fragment = (mf ? IP_MORE_FRAGMENT : 0) | swap16(offset);
+    head->ttl = IP_DEFALUT_TTL;
+    head->protocol = protocol;
+    head->hdr_checksum = 0;
+    memcpy(head->src_ip, net_if_ip, NET_IP_LEN);
+    memcpy(head->dest_ip, ip, NET_IP_LEN);
+    head->hdr_checksum = checksum16((uint16_t *)head, sizeof(ip_hdr_t));
+    arp_out(buf, ip, NET_PROTOCOL_IP);
 }
 
 /**
@@ -67,6 +112,33 @@ void ip_fragment_out(buf_t *buf, uint8_t *ip, net_protocol_t protocol, int id, u
  */
 void ip_out(buf_t *buf, uint8_t *ip, net_protocol_t protocol)
 {
-    // TODO 
-    
+    // TODO
+    static int id = 0;
+    static uint16_t maxLen = ETHERNET_MTU - sizeof(ip_hdr_t);
+    if (buf->len > maxLen)
+    {
+        uint16_t len = buf->len;
+        uint16_t offset = 0;
+        while (len > maxLen)
+        {
+            buf_t newBuf;
+            buf_copy(&newBuf, buf);
+            buf->len = maxLen;
+            // offset以byte为单位
+            ip_fragment_out(buf, ip, protocol, id, (offset * (maxLen)) >> 3, offset ? 1 : 0);
+            len -= maxLen;
+            offset++;
+        }
+        if (len > 0)
+        {
+            buf->len = len;
+            ip_fragment_out(buf, ip, protocol, id, (offset * (maxLen)) >> 3, 0);
+        }
+    }
+    else
+    {
+        ip_fragment_out(buf, ip, protocol, id, 0, 0);
+    }
+
+    id++;
 }

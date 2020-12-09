@@ -104,4 +104,20 @@ void printBuf(buf_t *buf)
 uint16_t checksum16(uint16_t *buf, int len)
 {
     // TODO
+    uint32_t checksum = 0;
+    uint16_t *tempBuf = buf;
+    while (len > 1)
+    {
+        checksum += (uint32_t)(*tempBuf);
+        tempBuf++;
+        len -= sizeof(uint16_t);
+    }
+    // if (len)
+    // {
+    //     checksum += *(uint8_t *)tempBuf;
+    // }
+    checksum = (checksum >> 16) + (checksum & 0xffff);
+    checksum += (checksum >> 16);
+    uint16_t ans = checksum & 0x0000ffff;
+    return ~ans;
 }
