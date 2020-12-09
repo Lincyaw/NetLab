@@ -33,7 +33,7 @@ void ip_in(buf_t *buf)
     }
     uint16_t tempChecksum = header->hdr_checksum;
     header->hdr_checksum = 0;
-    if (checksum16((uint16_t *)header, sizeof(ip_hdr_t)) != tempChecksum)
+    if (checksum16((uint16_t *)header, sizeof(ip_hdr_t)) != (header->hdr_checksum = tempChecksum))
     {
         fprintf(stderr, "Error in checksum.\n");
         return;
@@ -44,7 +44,7 @@ void ip_in(buf_t *buf)
     }
     switch (header->protocol)
     {
-    case NET_PROTOCOL_IP:
+    case NET_PROTOCOL_ICMP:
         buf_remove_header(buf, sizeof(ip_hdr_t));
         icmp_in(buf, header->src_ip);
         break;
@@ -53,7 +53,7 @@ void ip_in(buf_t *buf)
         udp_in(buf, header->src_ip);
         break;
     default:
-        icmp_unreachable(buf, header->src_ip, ICMP_CODE_PORT_UNREACH);
+        icmp_unreachable(buf, header->src_ip, ICMP_CODE_PROTOCOL_UNREACH);
         break;
     }
 }
@@ -119,19 +119,21 @@ void ip_out(buf_t *buf, uint8_t *ip, net_protocol_t protocol)
     {
         uint16_t len = buf->len;
         uint16_t offset = 0;
-        while (len > maxLen)
+        while (len >= maxLen)
         {
             buf_t newBuf;
             buf_copy(&newBuf, buf);
             buf->len = maxLen;
             // offset以byte为单位
-            ip_fragment_out(buf, ip, protocol, id, (offset * (maxLen)) >> 3, offset ? 1 : 0);
+            buf->data += offset ? ETHERNET_MTU : 0;
+            ip_fragment_out(buf, ip, protocol, id, (offset * (maxLen)) >> 3, 1);
             len -= maxLen;
             offset++;
         }
         if (len > 0)
         {
             buf->len = len;
+            buf->data += offset ? ETHERNET_MTU : 0;
             ip_fragment_out(buf, ip, protocol, id, (offset * (maxLen)) >> 3, 0);
         }
     }
