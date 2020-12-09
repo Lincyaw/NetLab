@@ -33,11 +33,13 @@ void ip_in(buf_t *buf)
     }
     uint16_t tempChecksum = header->hdr_checksum;
     header->hdr_checksum = 0;
-    if (checksum16((uint16_t *)header, sizeof(ip_hdr_t)) != (header->hdr_checksum = tempChecksum))
+    if (checksum16((uint16_t *)header, sizeof(ip_hdr_t)) != (tempChecksum))
     {
+        header->hdr_checksum = tempChecksum;
         fprintf(stderr, "Error in checksum.\n");
         return;
     }
+    header->hdr_checksum = tempChecksum;
     if (memcmp(header->dest_ip, net_if_ip, NET_IP_LEN) != 0)
     {
         return;
