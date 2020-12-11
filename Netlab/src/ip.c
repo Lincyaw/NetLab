@@ -123,8 +123,6 @@ void ip_out(buf_t *buf, uint8_t *ip, net_protocol_t protocol)
         uint16_t offset = 0;
         while (len >= maxLen)
         {
-            buf_t newBuf;
-            buf_copy(&newBuf, buf);
             buf->len = maxLen;
             // offset以byte为单位
             buf->data += offset ? maxLen : 0;
