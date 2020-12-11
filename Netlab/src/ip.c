@@ -127,7 +127,7 @@ void ip_out(buf_t *buf, uint8_t *ip, net_protocol_t protocol)
             buf_copy(&newBuf, buf);
             buf->len = maxLen;
             // offset以byte为单位
-            buf->data += offset ? ETHERNET_MTU : 0;
+            buf->data += offset ? maxLen : 0;
             ip_fragment_out(buf, ip, protocol, id, (offset * (maxLen)) >> 3, 1);
             len -= maxLen;
             offset++;
@@ -135,7 +135,7 @@ void ip_out(buf_t *buf, uint8_t *ip, net_protocol_t protocol)
         if (len > 0)
         {
             buf->len = len;
-            buf->data += offset ? ETHERNET_MTU : 0;
+            buf->data += offset ? maxLen : 0;
             ip_fragment_out(buf, ip, protocol, id, (offset * (maxLen)) >> 3, 0);
         }
     }
