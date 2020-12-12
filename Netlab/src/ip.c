@@ -3,7 +3,23 @@
 #include "icmp.h"
 #include "udp.h"
 #include <string.h>
+#include "ethernet.h"
+#include <assert.h>
 
+void printIpHeader(ip_hdr_t *ip)
+{
+    printf("hdr_len: %x\n", ip->hdr_len);
+    printf("version: %x\n", ip->version);
+    printf("tos: %x\n", ip->tos);
+    printf("total_len: %d\n", swap16(ip->total_len));
+    printf("id: %x\n", ip->id);
+    printf("flags_fragment: %x\n", ip->flags_fragment);
+    printf("ttl: %x\n", ip->ttl);
+    printf("protocol: %x\n", ip->protocol);
+    printf("hdr_checksum: %x\n", ip->hdr_checksum);
+    // printf("src_ip: %x\n", ip->src_ip);
+    // printf("dest_ip: %x\n", ip->dest_ip);
+}
 /**
  * @brief 处理一个收到的数据包
  *        你首先需要做报头检查，检查项包括：版本号、总长度、首部长度等。
@@ -82,15 +98,17 @@ void ip_fragment_out(buf_t *buf, uint8_t *ip, net_protocol_t protocol, int id, u
     head->hdr_len = sizeof(ip_hdr_t) / IP_HDR_LEN_PER_BYTE;
     head->version = IP_VERSION_4;
     head->tos = 0;
+    printf("==================buf的长度是%d=============================================\n", buf->len);
     head->total_len = swap16(buf->len);
     head->id = swap16(id);
     head->flags_fragment = (mf ? IP_MORE_FRAGMENT : 0) | swap16(offset);
     head->ttl = IP_DEFALUT_TTL;
     head->protocol = protocol;
-    head->hdr_checksum = 0;
     memcpy(head->src_ip, net_if_ip, NET_IP_LEN);
     memcpy(head->dest_ip, ip, NET_IP_LEN);
+    head->hdr_checksum = 0;
     head->hdr_checksum = checksum16((uint16_t *)head, sizeof(ip_hdr_t));
+    printIpHeader(head);
     arp_out(buf, ip, NET_PROTOCOL_IP);
 }
 
@@ -115,26 +133,42 @@ void ip_fragment_out(buf_t *buf, uint8_t *ip, net_protocol_t protocol, int id, u
 void ip_out(buf_t *buf, uint8_t *ip, net_protocol_t protocol)
 {
     // TODO
+    printf("===============================测试开始===========================\n");
+    // printBuf(buf);
     static int id = 0;
     static uint16_t maxLen = ETHERNET_MTU - sizeof(ip_hdr_t);
     if (buf->len > maxLen)
     {
+        buf_t newBuf;
+        buf_t *pBuf = &newBuf;
+        buf_init(pBuf, maxLen);
         uint16_t len = buf->len;
         uint16_t offset = 0;
-        while (len >= maxLen)
+        len -= sizeof(ip_hdr_t); // 减掉包头的数据长度
+        printf("============长度是\t%d========================\n", len);
+        assert(len == 5020);
+
+        while (len >= maxLen) // 如果大于最大能发的
         {
-            buf->len = maxLen;
+            pBuf->len = maxLen; //pBuf是数据部分
             // offset以byte为单位
-            buf->data += offset ? ETHERNET_MTU : 0;
-            ip_fragment_out(buf, ip, protocol, id, (offset * (maxLen)) >> 3, 1);
-            len -= maxLen;
+            pBuf->data = buf->data; // 令指针指向data
+            // printBuf(pBuf);
+            ip_fragment_out(pBuf, ip, protocol, id, (offset * (maxLen)) >> 3, 1);
+
+            buf->data += offset ? maxLen : 0; // 原始buf的data向前挪maxLen个数据
+            len -= maxLen;                    // len减少了数据的长度
+            printf("============长度是\t%d========================\n", len);
             offset++;
         }
+        printf("============长度是\t%d========================\n", len);
         if (len > 0)
         {
-            buf->len = len;
-            buf->data += offset ? ETHERNET_MTU : 0;
-            ip_fragment_out(buf, ip, protocol, id, (offset * (maxLen)) >> 3, 0);
+            buf_init(pBuf, len);
+            pBuf->len = len;
+            pBuf->data = buf->data;
+            // printBuf(pBuf);
+            ip_fragment_out(pBuf, ip, protocol, id, (offset * (maxLen)) >> 3, 0);
         }
     }
     else

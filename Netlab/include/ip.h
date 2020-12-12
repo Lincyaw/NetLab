@@ -24,7 +24,7 @@ typedef struct ip_hdr
 #define IP_HDR_OFFSET_PER_BYTE (8) //ip分片偏移长度单位
 #define IP_VERSION_4 (4)           //ipv4
 #define IP_MORE_FRAGMENT 1 << 5    //ip分片mf位
-
+void printIpHeader(ip_hdr_t *ip);
 /**
  * @brief 处理一个收到的数据包
  * 

@@ -2,17 +2,17 @@
 #define UTILS_H
 #include <stdint.h>
 #include "config.h"
-#include<stdio.h>
+#include <stdio.h>
 #define BUF_MAX_LEN (UINT16_MAX + 14) //最大udp包 + 以太网帧报头长度
 #define IP 0x0800
 #define ARP 0x0806
 typedef struct buf
 {
-    uint16_t len;                       // 包中有效数据大小
-    uint8_t *data;                      // 包的数据起始地址
-    uint8_t payload[BUF_MAX_LEN];       // 最大负载数据量
+    uint16_t len;                 // 包中有效数据大小
+    uint8_t *data;                // 包的数据起始地址
+    uint8_t payload[BUF_MAX_LEN]; // 最大负载数据量
 } buf_t;
-static buf_t rxbuf, txbuf;          //一个buf足够单线程使用
+static buf_t rxbuf, txbuf; //一个buf足够单线程使用
 
 void printBuf(buf_t *buf);
 
