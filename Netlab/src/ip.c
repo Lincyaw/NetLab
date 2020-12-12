@@ -145,9 +145,9 @@ void ip_out(buf_t *buf, uint8_t *ip, net_protocol_t protocol)
         buf_init(pBuf, maxLen);
         uint16_t len = buf->len;
         uint16_t offset = 0;
-        len -= sizeof(ip_hdr_t); // 减掉包头的数据长度
+        // len -= sizeof(ip_hdr_t); // 减掉包头的数据长度
         // printf("============长度是\t%d========================\n", len);
-        assert(len == 5020);
+        // assert(len == 5020);
 
         while (len >= maxLen) // 如果大于最大能发的
         {
@@ -165,11 +165,11 @@ void ip_out(buf_t *buf, uint8_t *ip, net_protocol_t protocol)
         if (len > 0)
         {
             buf_init(pBuf, len);
-            pBuf->len = len + sizeof(ip_hdr_t);
+            pBuf->len = len;
             pBuf->data = buf->data;
             // printBuf(pBuf);
             ip_fragment_out(pBuf, ip, protocol, id, (offset * (maxLen)) >> 3, 0);
-            printBuf(pBuf);
+            // printBuf(pBuf);
         }
     }
     else
