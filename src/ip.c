@@ -42,7 +42,7 @@ void ip_in(buf_t *buf)
     ip_hdr_t *header = (ip_hdr_t *)buf->data;
     if (header->version != IP_VERSION_4 ||
         header->hdr_len * IP_HDR_LEN_PER_BYTE != sizeof(ip_hdr_t) ||
-        header->total_len > 65535)
+        header->total_len < sizeof(ip_hdr_t))
     {
         fprintf(stderr, "Error of ip header.\n");
         return;
