@@ -31,6 +31,7 @@ CMakeFiles/main.dir/src/icmp.c.o: ../src/icmp.c
 
 CMakeFiles/main.dir/src/ip.c.o: ../include/arp.h
 CMakeFiles/main.dir/src/ip.c.o: ../include/config.h
+CMakeFiles/main.dir/src/ip.c.o: ../include/ethernet.h
 CMakeFiles/main.dir/src/ip.c.o: ../include/icmp.h
 CMakeFiles/main.dir/src/ip.c.o: ../include/ip.h
 CMakeFiles/main.dir/src/ip.c.o: ../include/net.h

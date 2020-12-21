@@ -4,15 +4,15 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "/home/nn/NetLab/Netlab/src/arp.c" "/home/nn/NetLab/Netlab/build/CMakeFiles/main.dir/src/arp.c.o"
-  "/home/nn/NetLab/Netlab/src/driver.c" "/home/nn/NetLab/Netlab/build/CMakeFiles/main.dir/src/driver.c.o"
-  "/home/nn/NetLab/Netlab/src/ethernet.c" "/home/nn/NetLab/Netlab/build/CMakeFiles/main.dir/src/ethernet.c.o"
-  "/home/nn/NetLab/Netlab/src/icmp.c" "/home/nn/NetLab/Netlab/build/CMakeFiles/main.dir/src/icmp.c.o"
-  "/home/nn/NetLab/Netlab/src/ip.c" "/home/nn/NetLab/Netlab/build/CMakeFiles/main.dir/src/ip.c.o"
-  "/home/nn/NetLab/Netlab/src/main.c" "/home/nn/NetLab/Netlab/build/CMakeFiles/main.dir/src/main.c.o"
-  "/home/nn/NetLab/Netlab/src/net.c" "/home/nn/NetLab/Netlab/build/CMakeFiles/main.dir/src/net.c.o"
-  "/home/nn/NetLab/Netlab/src/udp.c" "/home/nn/NetLab/Netlab/build/CMakeFiles/main.dir/src/udp.c.o"
-  "/home/nn/NetLab/Netlab/src/utils.c" "/home/nn/NetLab/Netlab/build/CMakeFiles/main.dir/src/utils.c.o"
+  "/home/nn/NetLab/src/arp.c" "/home/nn/NetLab/build/CMakeFiles/main.dir/src/arp.c.o"
+  "/home/nn/NetLab/src/driver.c" "/home/nn/NetLab/build/CMakeFiles/main.dir/src/driver.c.o"
+  "/home/nn/NetLab/src/ethernet.c" "/home/nn/NetLab/build/CMakeFiles/main.dir/src/ethernet.c.o"
+  "/home/nn/NetLab/src/icmp.c" "/home/nn/NetLab/build/CMakeFiles/main.dir/src/icmp.c.o"
+  "/home/nn/NetLab/src/ip.c" "/home/nn/NetLab/build/CMakeFiles/main.dir/src/ip.c.o"
+  "/home/nn/NetLab/src/main.c" "/home/nn/NetLab/build/CMakeFiles/main.dir/src/main.c.o"
+  "/home/nn/NetLab/src/net.c" "/home/nn/NetLab/build/CMakeFiles/main.dir/src/net.c.o"
+  "/home/nn/NetLab/src/udp.c" "/home/nn/NetLab/build/CMakeFiles/main.dir/src/udp.c.o"
+  "/home/nn/NetLab/src/utils.c" "/home/nn/NetLab/build/CMakeFiles/main.dir/src/utils.c.o"
   )
 set(CMAKE_C_COMPILER_ID "GNU")
 
