@@ -60,119 +60,119 @@ include CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/src/arp.c.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/src/arp.c.o: ../src/arp.c
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/nn/NetLab/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/main.dir/src/arp.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/main.dir/src/arp.c.o   -c /home/nn/NetLab/src/arp.c
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/main.dir/src/arp.c.o   -c /home/nn/NetLab/src/arp.c
 
 CMakeFiles/main.dir/src/arp.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/main.dir/src/arp.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/nn/NetLab/src/arp.c > CMakeFiles/main.dir/src/arp.c.i
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/nn/NetLab/src/arp.c > CMakeFiles/main.dir/src/arp.c.i
 
 CMakeFiles/main.dir/src/arp.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/main.dir/src/arp.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/nn/NetLab/src/arp.c -o CMakeFiles/main.dir/src/arp.c.s
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/nn/NetLab/src/arp.c -o CMakeFiles/main.dir/src/arp.c.s
 
 CMakeFiles/main.dir/src/driver.c.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/src/driver.c.o: ../src/driver.c
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/nn/NetLab/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/main.dir/src/driver.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/main.dir/src/driver.c.o   -c /home/nn/NetLab/src/driver.c
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/main.dir/src/driver.c.o   -c /home/nn/NetLab/src/driver.c
 
 CMakeFiles/main.dir/src/driver.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/main.dir/src/driver.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/nn/NetLab/src/driver.c > CMakeFiles/main.dir/src/driver.c.i
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/nn/NetLab/src/driver.c > CMakeFiles/main.dir/src/driver.c.i
 
 CMakeFiles/main.dir/src/driver.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/main.dir/src/driver.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/nn/NetLab/src/driver.c -o CMakeFiles/main.dir/src/driver.c.s
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/nn/NetLab/src/driver.c -o CMakeFiles/main.dir/src/driver.c.s
 
 CMakeFiles/main.dir/src/ethernet.c.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/src/ethernet.c.o: ../src/ethernet.c
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/nn/NetLab/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/main.dir/src/ethernet.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/main.dir/src/ethernet.c.o   -c /home/nn/NetLab/src/ethernet.c
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/main.dir/src/ethernet.c.o   -c /home/nn/NetLab/src/ethernet.c
 
 CMakeFiles/main.dir/src/ethernet.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/main.dir/src/ethernet.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/nn/NetLab/src/ethernet.c > CMakeFiles/main.dir/src/ethernet.c.i
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/nn/NetLab/src/ethernet.c > CMakeFiles/main.dir/src/ethernet.c.i
 
 CMakeFiles/main.dir/src/ethernet.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/main.dir/src/ethernet.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/nn/NetLab/src/ethernet.c -o CMakeFiles/main.dir/src/ethernet.c.s
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/nn/NetLab/src/ethernet.c -o CMakeFiles/main.dir/src/ethernet.c.s
 
 CMakeFiles/main.dir/src/icmp.c.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/src/icmp.c.o: ../src/icmp.c
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/nn/NetLab/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/main.dir/src/icmp.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/main.dir/src/icmp.c.o   -c /home/nn/NetLab/src/icmp.c
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/main.dir/src/icmp.c.o   -c /home/nn/NetLab/src/icmp.c
 
 CMakeFiles/main.dir/src/icmp.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/main.dir/src/icmp.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/nn/NetLab/src/icmp.c > CMakeFiles/main.dir/src/icmp.c.i
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/nn/NetLab/src/icmp.c > CMakeFiles/main.dir/src/icmp.c.i
 
 CMakeFiles/main.dir/src/icmp.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/main.dir/src/icmp.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/nn/NetLab/src/icmp.c -o CMakeFiles/main.dir/src/icmp.c.s
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/nn/NetLab/src/icmp.c -o CMakeFiles/main.dir/src/icmp.c.s
 
 CMakeFiles/main.dir/src/ip.c.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/src/ip.c.o: ../src/ip.c
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/nn/NetLab/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/main.dir/src/ip.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/main.dir/src/ip.c.o   -c /home/nn/NetLab/src/ip.c
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/main.dir/src/ip.c.o   -c /home/nn/NetLab/src/ip.c
 
 CMakeFiles/main.dir/src/ip.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/main.dir/src/ip.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/nn/NetLab/src/ip.c > CMakeFiles/main.dir/src/ip.c.i
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/nn/NetLab/src/ip.c > CMakeFiles/main.dir/src/ip.c.i
 
 CMakeFiles/main.dir/src/ip.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/main.dir/src/ip.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/nn/NetLab/src/ip.c -o CMakeFiles/main.dir/src/ip.c.s
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/nn/NetLab/src/ip.c -o CMakeFiles/main.dir/src/ip.c.s
 
 CMakeFiles/main.dir/src/main.c.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/src/main.c.o: ../src/main.c
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/nn/NetLab/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object CMakeFiles/main.dir/src/main.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/main.dir/src/main.c.o   -c /home/nn/NetLab/src/main.c
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/main.dir/src/main.c.o   -c /home/nn/NetLab/src/main.c
 
 CMakeFiles/main.dir/src/main.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/main.dir/src/main.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/nn/NetLab/src/main.c > CMakeFiles/main.dir/src/main.c.i
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/nn/NetLab/src/main.c > CMakeFiles/main.dir/src/main.c.i
 
 CMakeFiles/main.dir/src/main.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/main.dir/src/main.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/nn/NetLab/src/main.c -o CMakeFiles/main.dir/src/main.c.s
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/nn/NetLab/src/main.c -o CMakeFiles/main.dir/src/main.c.s
 
 CMakeFiles/main.dir/src/net.c.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/src/net.c.o: ../src/net.c
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/nn/NetLab/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object CMakeFiles/main.dir/src/net.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/main.dir/src/net.c.o   -c /home/nn/NetLab/src/net.c
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/main.dir/src/net.c.o   -c /home/nn/NetLab/src/net.c
 
 CMakeFiles/main.dir/src/net.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/main.dir/src/net.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/nn/NetLab/src/net.c > CMakeFiles/main.dir/src/net.c.i
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/nn/NetLab/src/net.c > CMakeFiles/main.dir/src/net.c.i
 
 CMakeFiles/main.dir/src/net.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/main.dir/src/net.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/nn/NetLab/src/net.c -o CMakeFiles/main.dir/src/net.c.s
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/nn/NetLab/src/net.c -o CMakeFiles/main.dir/src/net.c.s
 
 CMakeFiles/main.dir/src/udp.c.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/src/udp.c.o: ../src/udp.c
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/nn/NetLab/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building C object CMakeFiles/main.dir/src/udp.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/main.dir/src/udp.c.o   -c /home/nn/NetLab/src/udp.c
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/main.dir/src/udp.c.o   -c /home/nn/NetLab/src/udp.c
 
 CMakeFiles/main.dir/src/udp.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/main.dir/src/udp.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/nn/NetLab/src/udp.c > CMakeFiles/main.dir/src/udp.c.i
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/nn/NetLab/src/udp.c > CMakeFiles/main.dir/src/udp.c.i
 
 CMakeFiles/main.dir/src/udp.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/main.dir/src/udp.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/nn/NetLab/src/udp.c -o CMakeFiles/main.dir/src/udp.c.s
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/nn/NetLab/src/udp.c -o CMakeFiles/main.dir/src/udp.c.s
 
 CMakeFiles/main.dir/src/utils.c.o: CMakeFiles/main.dir/flags.make
 CMakeFiles/main.dir/src/utils.c.o: ../src/utils.c
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/nn/NetLab/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building C object CMakeFiles/main.dir/src/utils.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/main.dir/src/utils.c.o   -c /home/nn/NetLab/src/utils.c
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/main.dir/src/utils.c.o   -c /home/nn/NetLab/src/utils.c
 
 CMakeFiles/main.dir/src/utils.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/main.dir/src/utils.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/nn/NetLab/src/utils.c > CMakeFiles/main.dir/src/utils.c.i
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/nn/NetLab/src/utils.c > CMakeFiles/main.dir/src/utils.c.i
 
 CMakeFiles/main.dir/src/utils.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/main.dir/src/utils.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/nn/NetLab/src/utils.c -o CMakeFiles/main.dir/src/utils.c.s
+	/bin/gcc-9 $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/nn/NetLab/src/utils.c -o CMakeFiles/main.dir/src/utils.c.s
 
 # Object files for target main
 main_OBJECTS = \
