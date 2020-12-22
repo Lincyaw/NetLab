@@ -143,7 +143,7 @@ static void arp_req(uint8_t *target_ip) {
  */
 void arp_in(buf_t *buf) {
     // TODO
-    printBuf(buf);
+//    printBuf(buf);
     arp_pkt_t *header = (arp_pkt_t *) buf->data;
     if (header->hw_len != NET_MAC_LEN ||
         header->hw_type != swap16(ARP_HW_ETHER) ||
@@ -156,10 +156,11 @@ void arp_in(buf_t *buf) {
     arp_update(header->sender_ip, header->sender_mac, ARP_VALID);
     if (arp_buf.valid) {
         uint8_t *mac;
-        fprintf(stderr, "Arp buf valid\n");
+//        fprintf(stderr, "Arp buf valid\n");
         if ((mac = arp_lookup(arp_buf.ip)) != NULL) {
             arp_buf.valid = 0;
             // printBuf(&(arp_buf.buf));
+//            fprintf(stderr, "mac = arp_lookup(arp_buf.ip)) != NULL\n");
             ethernet_out(&(arp_buf.buf), mac, arp_buf.protocol);
         }
     } else {
@@ -174,9 +175,11 @@ void arp_in(buf_t *buf) {
             memcpy(sender->target_ip, header->sender_ip, NET_IP_LEN);
             memcpy(sender->target_mac, header->sender_mac, NET_MAC_LEN);
             // printBuf(&txbuf);
+//            fprintf(stderr, "Here\n");
             ethernet_out(&txbuf, sender->target_mac, NET_PROTOCOL_ARP);
         }
     }
+//    fprintf(stderr, "Nothing happened\n");
 }
 
 /**

@@ -47,6 +47,9 @@ typedef struct arp_pkt
 
 #pragma pack()
 
+
+void printArpTable(arp_buf_t arp_buf);
+
 /**
  * @brief 初始化arp协议
  * 
