@@ -16,13 +16,13 @@
     uint8_t target_ip[NET_IP_LEN];   // 接收方协议地址          ?
  */
 static const arp_pkt_t arp_init_pkt = {
-    .hw_type = swap16(ARP_HW_ETHER),
-    .pro_type = swap16(NET_PROTOCOL_IP),
-    .hw_len = NET_MAC_LEN,
-    .pro_len = NET_IP_LEN,
-    .sender_ip = DRIVER_IF_IP,
-    .sender_mac = DRIVER_IF_MAC,
-    .target_mac = {0}};
+        .hw_type = swap16(ARP_HW_ETHER),
+        .pro_type = swap16(NET_PROTOCOL_IP),
+        .hw_len = NET_MAC_LEN,
+        .pro_len = NET_IP_LEN,
+        .sender_ip = DRIVER_IF_IP,
+        .sender_mac = DRIVER_IF_MAC,
+        .target_mac = {0}};
 
 /**
  * @brief arp地址转换表
@@ -35,7 +35,13 @@ arp_entry_t arp_table[ARP_MAX_ENTRY];
  * 
  */
 arp_buf_t arp_buf;
-
+//void printArpTable(arp_buf_t arp_buf){
+//    //    int valid;               //有效位
+//    //    buf_t buf;               //数据包
+//    //    uint8_t ip[NET_IP_LEN];  //目的ip地址
+//    //    net_protocol_t protocol; //上层协议
+//    printf("valid: %d")
+//}
 /**
  * @brief 更新arp表
  *        你首先需要依次轮询检测ARP表中所有的ARP表项是否有超时，如果有超时，则将该表项的状态改为无效。
@@ -48,45 +54,42 @@ arp_buf_t arp_buf;
  * @param mac mac地址
  * @param state 表项的状态
  */
-void arp_update(uint8_t *ip, uint8_t *mac, arp_state_t state)
-{
+void arp_update(uint8_t *ip, uint8_t *mac, arp_state_t state) {
     // TODO
-    time_t curTime;
-    time(&curTime);
-    for (int i = 0; i < ARP_MAX_ENTRY; i++)
-    {
-        if (arp_table[i].timeout <= curTime)
-        {
+//    time_t curTime;
+//    time(&curTime);
+    time_t curTime = time(NULL);
+    for (int i = 0; i < ARP_MAX_ENTRY; i++) {
+        if (curTime - arp_table[i].timeout > ARP_TIMEOUT_SEC) {
             arp_table[i].state = ARP_INVALID;
         }
     }
 
-    for (int i = 0; i < ARP_MAX_ENTRY; i++)
-    {
-        if (arp_table[i].state == ARP_INVALID)
-        {
+    for (int i = 0; i < ARP_MAX_ENTRY; i++) {
+        if (arp_table[i].state == ARP_INVALID) {
             //如果有，则将arp_update()函数传递进来的新的IP、MAC信息插入到表中，
             //并记录超时时间，更改表项的状态为有效。
             memcpy(arp_table[i].ip, ip, NET_IP_LEN);
             memcpy(arp_table[i].mac, mac, NET_MAC_LEN);
-            arp_table[i].timeout = curTime + ARP_TIMEOUT_SEC;
+            arp_table[i].timeout = time(NULL) + ARP_TIMEOUT_SEC;
             arp_table[i].state = state;
             return;
         }
     }
-    int flag;
-    for (int i = 0; i < ARP_MAX_ENTRY; i++)
-    {
-        if (arp_table[i].timeout < curTime)
-        {
-            curTime = arp_table[i].timeout;
+    int flag = 0;
+    for (int i = 1; i < ARP_MAX_ENTRY; i++) {
+        if (arp_table[i].timeout < arp_table[flag].timeout) {
             flag = i;
         }
     }
+//    if(flag == 0){
+//        fprintf(stderr,"arp_update error.\n");
+//        return;
+//    }
     memcpy(arp_table[flag].ip, ip, NET_IP_LEN);
     memcpy(arp_table[flag].mac, mac, NET_MAC_LEN);
     arp_table[flag].state = state;
-    arp_table[flag].timeout = curTime + ARP_TIMEOUT_SEC;
+    arp_table[flag].timeout = time(NULL) + ARP_TIMEOUT_SEC;
 }
 
 /**
@@ -95,8 +98,7 @@ void arp_update(uint8_t *ip, uint8_t *mac, arp_state_t state)
  * @param ip 欲转换的ip地址
  * @return uint8_t* mac地址，未找到时为NULL
  */
-static uint8_t *arp_lookup(uint8_t *ip)
-{
+static uint8_t *arp_lookup(uint8_t *ip) {
     for (int i = 0; i < ARP_MAX_ENTRY; i++)
         if (arp_table[i].state == ARP_VALID && memcmp(arp_table[i].ip, ip, NET_IP_LEN) == 0)
             return arp_table[i].mac;
@@ -111,11 +113,10 @@ static uint8_t *arp_lookup(uint8_t *ip)
  * 
  * @param target_ip 想要知道的目标的ip地址
  */
-static void arp_req(uint8_t *target_ip)
-{
+static void arp_req(uint8_t *target_ip) {
     // TODO
     buf_init(&txbuf, sizeof(arp_pkt_t));
-    arp_pkt_t *head = (arp_pkt_t *)(txbuf.data);
+    arp_pkt_t *head = (arp_pkt_t *) (txbuf.data);
     *head = arp_init_pkt;
     head->opcode = swap16(ARP_REQUEST);
     memcpy(head->target_ip, target_ip, NET_IP_LEN);
@@ -140,36 +141,34 @@ static void arp_req(uint8_t *target_ip)
  * 
  * @param buf 要处理的数据包
  */
-void arp_in(buf_t *buf)
-{
+void arp_in(buf_t *buf) {
     // TODO
-    arp_pkt_t *header = (arp_pkt_t *)buf->data;
+    printBuf(buf);
+    arp_pkt_t *header = (arp_pkt_t *) buf->data;
     if (header->hw_len != NET_MAC_LEN ||
         header->hw_type != swap16(ARP_HW_ETHER) ||
         (header->opcode != swap16(ARP_REPLY) && header->opcode != swap16(ARP_REQUEST)) ||
         header->pro_len != NET_IP_LEN ||
-        header->pro_type != swap16(NET_PROTOCOL_IP))
-    {
+        header->pro_type != swap16(NET_PROTOCOL_IP)) {
         fprintf(stderr, "Error of arp header\n");
         return;
     }
     arp_update(header->sender_ip, header->sender_mac, ARP_VALID);
-    if (arp_buf.valid)
-    {
+    if (arp_buf.valid) {
         uint8_t *mac;
-        if ((mac = arp_lookup(arp_buf.ip)) != NULL)
-        {
+        fprintf(stderr, "Arp buf valid\n");
+        if ((mac = arp_lookup(arp_buf.ip)) != NULL) {
             arp_buf.valid = 0;
             // printBuf(&(arp_buf.buf));
             ethernet_out(&(arp_buf.buf), mac, arp_buf.protocol);
         }
-    }
-    else
-    {
-        if (header->opcode == swap16(ARP_REQUEST) && memcmp(header->target_ip, net_if_ip, NET_IP_LEN) == 0)
-        {
+    } else {
+//        printf("ARP: target ip: %02x.%02x.%02x.%02x, net_if_ip: %02x.%02x.%02x.%02x\n", header->target_ip[0],
+//               header->target_ip[1], header->target_ip[2], header->target_ip[3], net_if_ip[0], net_if_ip[1],
+//               net_if_ip[2], net_if_ip[3]);
+        if (header->opcode == swap16(ARP_REQUEST) && memcmp(header->target_ip, net_if_ip, NET_IP_LEN) == 0) {
             buf_init(&txbuf, sizeof(arp_pkt_t));
-            arp_pkt_t *sender = (arp_pkt_t *)txbuf.data;
+            arp_pkt_t *sender = (arp_pkt_t *) txbuf.data;
             *sender = arp_init_pkt;
             sender->opcode = swap16(ARP_REPLY);
             memcpy(sender->target_ip, header->sender_ip, NET_IP_LEN);
@@ -191,8 +190,7 @@ void arp_in(buf_t *buf)
  * @param ip 目标ip地址
  * @param protocol 上层协议
  */
-void arp_out(buf_t *buf, uint8_t *ip, net_protocol_t protocol)
-{
+void arp_out(buf_t *buf, uint8_t *ip, net_protocol_t protocol) {
     // TODO
     uint8_t *mac;
     if ((mac = arp_lookup(ip)) != NULL) // 根据 IP 地址来查找 ARP 表 (arp_table)。
@@ -201,9 +199,7 @@ void arp_out(buf_t *buf, uint8_t *ip, net_protocol_t protocol)
         //如果能找到该 IP 地址对应的 MAC 地址，则将数据包直接发送给以太网层，即
         //调用 ethernet_out 函数直接发出去。
         ethernet_out(buf, mac, protocol);
-    }
-    else
-    {
+    } else {
         /**
          * 如果没有找到对应的 MAC 地址，则调用 arp_req 函数，发一个 ARP request
          * 报文。注意，需要将来自 IP 层的数据包缓存到 arp_buf 的 buf 中，等待 ARP
@@ -223,8 +219,7 @@ void arp_out(buf_t *buf, uint8_t *ip, net_protocol_t protocol)
  * @brief 初始化arp协议
  * 
  */
-void arp_init()
-{
+void arp_init() {
     // ARP 表初始化，将 arp_table 中的 state 都初始化为 ARP_INVALID
     for (int i = 0; i < ARP_MAX_ENTRY; i++)
         arp_table[i].state = ARP_INVALID;
