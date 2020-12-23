@@ -4,70 +4,133 @@
 
 #include "server.h"
 
-string Server::Message;
+char Server::msg[MAX_PACKET_SIZE];
+int Server::num_client;
+int Server::last_closed;
+vector<desc_socket *> Server::Message;
+vector<desc_socket *> Server::new_sock_fd;
+std::mutex Server::mt;
+bool Server::is_Online;
 
-Server::Server(int port) {
-    sock_fd = socket(AF_INET, SOCK_STREAM, 0);
-    memset(&serverAddress, 0, sizeof(serverAddress));
-    // sin_family指代协议族，在socket编程中只能是AF_INET
-    serverAddress.sin_family = AF_INET;
-    // sin_addr存储IP地址，使用in_addr这个数据结构. htonl()函数将无符号整数hostlong从主机字节顺序转换为网络字节顺序。
-    serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
-    // sin_port存储端口号（使用网络字节顺序），在linux下，端口号的范围0~65535,同时0~1024范围的端口号已经被系统使用或保留。
-    serverAddress.sin_port = htons(port);
+int Server::setup(int port, const vector<int>& opts)
+{
+	int opt = 1;
+	is_Online = false;
+	last_closed = -1;
+	sock_fd = socket(AF_INET,SOCK_STREAM,0);
+ 	memset(&serverAddress,0,sizeof(serverAddress));
 
-    if (bind(sock_fd, (struct sockaddr *) &serverAddress, sizeof(serverAddress)) == -1) {
-        fprintf(stderr, "error in bind socket.  %s. \n", strerror(errno));
-//        exit(0);
-    }
+	for(unsigned int i = 0; i < opts.size(); i++) {
+		if( (setsockopt(sock_fd, SOL_SOCKET, opts.size(), (char *)&opt, sizeof(opt))) < 0 ) {
+			cerr << "Errore setsockopt" << endl;
+      			return -1;
+	      	}
+	}
 
-    listen(sock_fd, 5);
+	serverAddress.sin_family      = AF_INET;
+	serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
+	serverAddress.sin_port        = htons(port);
+
+	if((bind(sock_fd,(struct sockaddr *)&serverAddress, sizeof(serverAddress))) < 0){
+		cerr << "Error bind" << endl;
+		return -1;
+	}
+
+ 	if(listen(sock_fd,5) < 0){
+		cerr << "Error listen" << endl;
+		return -1;
+	}
+	num_client = 0;
+	is_Online = true;
+	return 0;
 }
 
-void Server::task(int argv) {
-    int new_sock_fd = argv;
-    // 容许线程从线程句柄独立开来执行
-    char msg[MAX_PACKET_SIZE];
+void* Server::task(void *argv) {
+    int n;
+    auto *desc = (struct desc_socket *) argv;
+    pthread_detach(pthread_self());
+
+    cerr << "open client[ id:" << desc->id << " ip:" << desc->ip << " socket:" << desc->socket << " ]" << endl;
     while (true) {
-        int n = recv(new_sock_fd, msg, MAX_PACKET_SIZE, 0);
-        if (n == 0) {
-            close(new_sock_fd);
+        n = recv(desc->socket, msg, MAX_PACKET_SIZE, 0);
+        if (n != -1) {
+            mt.lock();
+            if (n == 0) {
+                is_Online = false;
+                cerr << "close client[ id:" << desc->id << " ip:" << desc->ip << " socket:" << desc->socket << " ]"
+                     << endl;
+                last_closed = desc->id;
+                close(desc->socket);
+                new_sock_fd.erase(new_sock_fd.begin() + desc->id);
+                if (num_client > 0) num_client--;
+                break;
+            }
+            msg[n] = 0;
+            desc->message = string(msg);
+            Message.push_back(desc);
+            mt.unlock();
         }
-        msg[n] = 0;
-        if(send(new_sock_fd, msg, n, 0)==-1){
-            fprintf(stderr, "error in bind socket.  %s. \n", strerror(errno));
-            exit(0);
-        }
-        Message = string(msg);
+        usleep(600);
     }
+    free(desc);
+    pthread_exit(nullptr);
 }
 
-string Server::receive() {
-    while (true) {
-        socklen_t sock_size = sizeof(clientAddress);
-        new_sock_fd = accept(sock_fd, (struct sockaddr *) &clientAddress, &sock_size);
-        if (new_sock_fd == -1) {
-            fprintf(stderr, "error in accept.  %s. \n", strerror(errno));
-            exit(0);
-        }
-        serverThread = thread(task, new_sock_fd);
-        serverThread.detach();
-    }
+void Server::accepted()
+{
+	socklen_t sosize    = sizeof(clientAddress);
+	auto *so = new desc_socket;
+	so->socket          = accept(sock_fd,(struct sockaddr*)&clientAddress,&sosize);
+	so->id              = num_client;
+	so->ip              = inet_ntoa(clientAddress.sin_addr);
+	new_sock_fd.push_back( so );
+	cerr << "accept client[ id:" << new_sock_fd[num_client]->id <<
+	                      " ip:" << new_sock_fd[num_client]->ip <<
+		              " handle:" << new_sock_fd[num_client]->socket << " ]" << endl;
+	pthread_create(&serverThread[num_client], nullptr, &task, (void *)new_sock_fd[num_client]);
+	num_client++;
 }
 
-string Server::getMessage() {
-    return Message;
+vector<desc_socket*> Server::getMessage()
+{
+	return Message;
 }
 
-void Server::clean() {
-    Message = "";
+void Server::Send(string msg, int id)
+{
+	send(new_sock_fd[id]->socket,msg.c_str(),msg.length(),0);
 }
 
-void Server::detach() const {
-    close(sock_fd);
-    close(new_sock_fd);
+int Server::get_last_closed_sockets()
+{
+	return last_closed;
 }
 
-void Server::server_send(const string& msg) const {
-    send(new_sock_fd, msg.c_str(), msg.length(), 0);
+void Server::clean(int id)
+{
+	Message[id]->message = "";
+	memset(msg, 0, MAX_PACKET_SIZE);
+}
+
+string Server::get_ip_addr(int id)
+{
+	return new_sock_fd[id]->ip;
+}
+
+bool Server::is_online()
+{
+	return is_Online;
+}
+
+void Server::detach(int id)
+{
+	close(new_sock_fd[id]->socket);
+	new_sock_fd[id]->ip = "";
+	new_sock_fd[id]->id = -1;
+	new_sock_fd[id]->message = "";
+}
+
+void Server::closed()
+{
+	close(sock_fd);
 }

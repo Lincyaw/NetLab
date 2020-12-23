@@ -11,7 +11,7 @@ bool Client::init(const string &addr, int _port) {
             cout << "Could not create socket" << endl;
         }
     }
-    if (inet_addr(addr.c_str()) == -1) {
+    if ((signed)inet_addr(addr.c_str()) == -1) {
         struct hostent *he;
         struct in_addr **addr_list;
         if ((he = gethostbyname(addr.c_str())) == nullptr) {
