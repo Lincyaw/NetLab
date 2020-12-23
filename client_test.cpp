@@ -4,23 +4,30 @@
 
 
 #include "client.h"
+#include <signal.h>
 
 #define MAX_PACKET_SIZE 4096
+Client tcp;
+
+void sig_exit(int s) {
+    tcp.exit();
+    exit(0);
+}
 
 int main(int argc, char *argv[]) {
-    if (argc >= 2) {
-        Client tcp;
-        tcp.init("127.0.0.1", 11999);
-        int num = atoi(argv[2]);
-        cout << "Num Request:" << num << endl;
-        for (int i = 0; i < num; i++) {
-            string msg = argv[1];
-            tcp.Send(msg);
-            cout << tcp.receive(MAX_PACKET_SIZE) << endl;
-            sleep(1);
+    signal(SIGINT, sig_exit);
+    tcp.init("127.0.0.1", 11999);
+    while(true){
+        if(!(tcp.client_send(argv[1]))){
+            cout<<"send error"<<endl;
+            exit(0);
         }
-        exit(0);
-    } else {
-        cout << "Error: message num-request" << endl;
+        string rec = tcp.receive();
+        if (!rec.empty()) {
+            cout << "Server Response:" << rec << endl;
+        }else{
+            cout<<"receive error"<<endl;
+        }
     }
 }
+

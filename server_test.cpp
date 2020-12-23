@@ -4,9 +4,10 @@
 
 #include "lib/server.h"
 
+Server tcp(11999);
 
-[[noreturn]] void *loop(void *m) {
-    pthread_detach(pthread_self());
+
+void loop() {
     while (true) {
         string str = Server::getMessage();
         if (!str.empty()) {
@@ -18,11 +19,10 @@
 }
 
 int main() {
-    Server tcp(11999);
 
-    pthread_t msg;
-    if (pthread_create(&msg, nullptr, loop, (void *) 0) == 0) {
-        tcp.receive();
-    }
+    thread msg(loop);
+    msg.detach();
+    tcp.receive();
+
     return 0;
 }

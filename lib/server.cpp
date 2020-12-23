@@ -18,7 +18,7 @@ Server::Server(int port) {
 
     if (bind(sock_fd, (struct sockaddr *) &serverAddress, sizeof(serverAddress)) == -1) {
         fprintf(stderr, "error in bind socket.  %s. \n", strerror(errno));
-        exit(0);
+//        exit(0);
     }
 
     listen(sock_fd, 5);
@@ -32,11 +32,12 @@ void Server::task(int argv) {
         int n = recv(new_sock_fd, msg, MAX_PACKET_SIZE, 0);
         if (n == 0) {
             close(new_sock_fd);
-            exit(0);
         }
         msg[n] = 0;
-//        strcpy(msg, "you are my son.");
-        send(new_sock_fd, msg, n, 0);
+        if(send(new_sock_fd, msg, n, 0)==-1){
+            fprintf(stderr, "error in bind socket.  %s. \n", strerror(errno));
+            exit(0);
+        }
         Message = string(msg);
     }
 }
@@ -65,4 +66,8 @@ void Server::clean() {
 void Server::detach() const {
     close(sock_fd);
     close(new_sock_fd);
+}
+
+void Server::server_send(const string& msg) const {
+    send(new_sock_fd, msg.c_str(), msg.length(), 0);
 }

@@ -3,7 +3,8 @@
 //
 
 #include "client.h"
-bool Client::init(const string& addr, int _port) {
+
+bool Client::init(const string &addr, int _port) {
     if (sock == -1) {
         sock = socket(AF_INET, SOCK_STREAM, 0);
         if (sock == -1) {
@@ -35,11 +36,16 @@ bool Client::init(const string& addr, int _port) {
     return true;
 }
 
-bool Client::Send(const string& data) const {
-    if (send(sock, data.c_str(), strlen(data.c_str()), 0) < 0) {
-        cout << "Send failed : " << data << endl;
+bool Client::client_send(const string &data) const {
+    if (sock != -1) {
+        if (send(sock, data.c_str(), strlen(data.c_str()), 0) < 0) {
+            cout << "Send failed : " << data << endl;
+            return false;
+        }
+    } else {
         return false;
     }
+
     return true;
 }
 
@@ -49,6 +55,7 @@ string Client::receive(int size) const {
     if (recv(sock, buffer, size, 0) < 0)// sizeof(buffer)
     {
         cout << "receive failed!" << endl;
+        return "";
     }
     buffer[size] = '\0';
     reply = buffer;
@@ -61,9 +68,13 @@ string Client::read() const {
     while (buffer[0] != '\n') {
         if (recv(sock, buffer, sizeof(buffer), 0) < 0) {
             cout << "receive failed!" << endl;
-            break;
+            return "";
         }
         reply += buffer[0];
     }
     return reply;
+}
+
+void Client::exit() const {
+    close(sock);
 }

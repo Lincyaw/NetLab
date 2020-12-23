@@ -10,17 +10,18 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <thread>
-#include <pthread.h>
 #include <cstdlib>
 #include <cstring>
 #include <arpa/inet.h>
 
+
 using namespace std;
 #define MAX_PACKET_SIZE 4096
 
+
 class Server {
 public:
-    Server():sock_fd(-1),new_sock_fd(-1){};
+    Server() : sock_fd(-1), new_sock_fd(-1) {};
 
     explicit Server(int port);
 
@@ -40,6 +41,8 @@ public:
     void detach() const;
 
     static void clean();
+
+    void server_send(const string &msg) const;
 
 private:
     static void task(int argv);
