@@ -23,10 +23,15 @@ int main(int argc, char *argv[])
 	}
 	signal(SIGINT, sig_exit);
 
-	tcp.init(argv[1],atoi(argv[2]));
+    if(!tcp.client_init(argv[1], atoi(argv[2]))){
+        cerr<<"client init failed"<<endl;
+        exit(0);
+    }
 	while(1)
 	{
-		tcp.client_send(argv[3]);
+	    if(!tcp.client_send(argv[3])){
+	        cerr<<"Error: send failed."<<endl;
+	    }
 		string rec = tcp.receive();
 		if( rec != "" )
 		{

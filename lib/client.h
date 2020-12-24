@@ -10,7 +10,6 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <thread>
-#include <cstdlib>
 #include <cstring>
 #include <arpa/inet.h>
 
@@ -23,17 +22,15 @@ class Client {
     struct sockaddr_in server{};
 
 public:
-    Client() : sock(-1), port(0) {};
+    Client():sock(-1),port(0){};
 
-    bool init(const string &address, int port);
+    bool client_init(const string &addr, int po);
 
     bool client_send(const string &data) const;
 
     string receive(int size = 4096) const;
 
     void exit() const;
-
-    string read() const;
 };
 
 #endif //NETLAB_CLIENT_H
