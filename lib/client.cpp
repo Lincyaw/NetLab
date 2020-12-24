@@ -3,7 +3,12 @@
 //
 
 #include "client.h"
-
+/**
+ * 初始化客户端 socket
+ * @param addr ip地址
+ * @param po 端口号
+ * @return 成功 true， 失败 false
+ */
 bool Client::client_init(const string &addr, int po) {
     // 初始化的时候sock被初始化为-1
     if (sock == -1) {
@@ -51,7 +56,7 @@ bool Client::client_init(const string &addr, int po) {
 bool Client::client_send(const string &data) const {
     // socket没初始化成功，或者发送失败则失败
     if (sock == -1 || send(sock, data.c_str(), strlen(data.c_str()), 0) < 0) {
-        cerr << "Error: Send failed : " << data << endl;
+        cerr << "Error: server_send failed : " << data << endl;
         return false;
     }
     return true;

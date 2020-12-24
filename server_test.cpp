@@ -17,32 +17,27 @@ void close_app(int s) {
 }
 
 void send_client(struct desc_socket *m) {
-    auto *desc = m;
 
     while (true) {
-        if (!tcp.is_online() && Server::get_last_closed_sockets() == desc->id) {
-            cerr << "Connessione chiusa: stop send_clients( id:" << desc->id << " ip:" << desc->ip << endl;
+        // server关闭了，并且最后结束的线程是该线程
+        if (!Server::is_online() && Server::get_last_closed_sockets() == m->id) {
+            cerr << "stop send_clients id:" << m->id << " ip:" << m->ip << " socket: " << m->socket << endl;
             break;
         }
-        std::time_t t = std::time(0);
+        std::time_t t = std::time(nullptr);
         std::tm *now = std::localtime(&t);
-        int hour = now->tm_hour;
-        int min = now->tm_min;
-        int sec = now->tm_sec;
 
         std::string date =
                 to_string(now->tm_year + 1900) + "-" +
                 to_string(now->tm_mon + 1) + "-" +
                 to_string(now->tm_mday) + " " +
-                to_string(hour) + ":" +
-                to_string(min) + ":" +
-                to_string(sec) + "\r\n";
+                to_string(now->tm_hour) + ":" +
+                to_string(now->tm_min) + ":" +
+                to_string(now->tm_sec) + "\r\n";
         cerr << date << endl;
-        tcp.Send(date, desc->id);
+        Server::server_send(date, m->id);
         sleep(time_send);
     }
-//    pthread_exit(nullptr);
-    terminate();
 }
 
 void received() {
@@ -51,7 +46,7 @@ void received() {
         desc = tcp.getMessage();
         for (unsigned int i = 0; i < desc.size(); i++) {
             if (!desc[i]->message.empty()) {
-                if (!desc[i]->message.empty() && !desc[i]->enable_message_runtime) {
+                if (!desc[i]->enable_message_runtime) {
                     desc[i]->enable_message_runtime = true;
                     msg1[num_message] = thread(send_client, desc[i]);
                     msg1[num_message].detach();
@@ -77,17 +72,22 @@ int main(int argc, char **argv) {
     if (argc == 3)
         time_send = atoi(argv[2]);
     signal(SIGINT, close_app);
-
-    thread msg;
+//SO_REUSEPORT支持多个进程或者线程绑定到同一端口，提高服务器程序的性能
+//SO_REUSEADDR同一地址
     vector<int> opts = {SO_REUSEPORT, SO_REUSEADDR};
-
-    if (tcp.setup(atoi(argv[1]), opts) == 0) {
-        msg = thread(received);
+    if (tcp.server_init(atoi(argv[1]), opts) == 0) {
+        // server 创建成功之后，需要监听客户端信息
+        thread msg(received);
         msg.detach();
-        while (1) {
-            tcp.accepted();
+        while (true) {
+            // 循环等待接受客户端
+            if(tcp.accepted()==-1){
+                cerr<<"accept error"<<endl;
+                break;
+            }
         }
-    } else
+    } else {
         cerr << "Error in init socket" << endl;
+    }
     return 0;
 }

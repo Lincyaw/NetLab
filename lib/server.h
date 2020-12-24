@@ -19,7 +19,7 @@
 using namespace std;
 #define MAX_PACKET_SIZE 4096
 #define MAX_CLIENT 1000
-
+#define DEBUG  (1)
 struct desc_socket {
     int socket = -1;
     string ip;
@@ -32,41 +32,42 @@ class Server {
 public:
     Server() = default;
 
-    int setup(int port, const vector<int>& opts = vector<int>());
+    int server_init(int port, const vector<int>& opts = vector<int>());
 
-    vector<desc_socket *> getMessage();
+    static vector<desc_socket *> getMessage();
 
-    void accepted();
+    int accepted();
 
-    void Send(string msg, int id);
+    static void server_send(const string& msg, int id);
 
     static void detach(int id);
 
     static void clean(int id);
 
-    bool is_online();
+    static bool is_online();
 
     static string get_ip_addr(int id);
 
     static int get_last_closed_sockets();
 
-    void closed();
+    void closed() const;
 
 private:
-    int sock_fd, n, pid;
-    struct sockaddr_in serverAddress;
-    struct sockaddr_in clientAddress;
+    int sock_fd{};
+    struct sockaddr_in serverAddress{};
+    struct sockaddr_in clientAddress{};
     // Thread Pool
-    pthread_t serverThread[MAX_CLIENT];
+    thread server_thread[MAX_CLIENT];
+//    pthread_t serverThread[MAX_CLIENT];
     static vector<desc_socket *> new_sock_fd;
     static char msg[MAX_PACKET_SIZE];
-    static vector<desc_socket *> Message;
+    static vector<desc_socket *> message;
     static bool is_Online;
     static int last_closed;
-    static int num_client;
+    static int client_num;
     static std::mutex mt;
 
-    static void *task(void *argv);
+    static void task(desc_socket *argv);
 };
 
 #endif //NETLAB_SERVER_H
