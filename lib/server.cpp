@@ -29,7 +29,7 @@ int Server::server_init(int port, const vector<int> &opts) {
     sock_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     memset(&serverAddress, 0, sizeof(serverAddress));
     for (uint32_t i = 0; i < opts.size(); i++) {
-        if ((setsockopt(sock_fd, SOL_SOCKET, opts.size(), (char *) &opt, sizeof(opt))) < 0) {
+        if ((setsockopt(sock_fd, SOL_SOCKET, opts[i], (char *) &opt, sizeof(opt))) < 0) {
             cerr << "Error: set sock option failed." << endl;
             return -1;
         }
@@ -84,6 +84,7 @@ int Server::accepted() {
 #if DEBUG == 1
     cerr << "server accept end" << endl;
 #endif
+    return 1;
 }
 
 void Server::task(desc_socket *argv) {

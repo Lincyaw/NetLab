@@ -5,7 +5,8 @@
 #include "lib/server.h"
 #include <csignal>
 #include <ctime>
-
+#include <sstream>
+#include <fstream>
 Server tcp;
 thread msg1[MAX_CLIENT];
 int num_message = 0;
@@ -22,7 +23,7 @@ void send_client(struct desc_socket *m) {
         // server关闭了，并且最后结束的线程是该线程
         if (!Server::is_online() && Server::get_last_closed_sockets() == m->id) {
             cerr << "stop send_clients id:" << m->id << " ip:" << m->ip << " socket: " << m->socket << endl;
-            break;
+            return;
         }
         std::time_t t = std::time(nullptr);
         std::tm *now = std::localtime(&t);
@@ -34,7 +35,7 @@ void send_client(struct desc_socket *m) {
                 to_string(now->tm_hour) + ":" +
                 to_string(now->tm_min) + ":" +
                 to_string(now->tm_sec) + "\r\n";
-        cerr << date << endl;
+        cerr << endl << date << endl;
         Server::server_send(date, m->id);
         sleep(time_send);
     }
@@ -44,20 +45,28 @@ void received() {
     vector<desc_socket *> desc;
     while (1) {
         desc = tcp.getMessage();
-        for (unsigned int i = 0; i < desc.size(); i++) {
-            if (!desc[i]->message.empty()) {
-                if (!desc[i]->enable_message_runtime) {
-                    desc[i]->enable_message_runtime = true;
-                    msg1[num_message] = thread(send_client, desc[i]);
-                    msg1[num_message].detach();
-                    num_message++;
-                }
+
+        for (int i = 0; i < desc.size(); i++) {
+            if (!desc[i]->message.empty() && !desc[i]->enable_message_runtime) {
+#if DEBUG == 1
+//                cerr << " i = " << i << endl;
+#endif
+                desc[i]->enable_message_runtime = true;
+                msg1[num_message] = thread(send_client, desc[i]);
+                msg1[num_message].detach();
+                num_message++;
+
+                ofstream t("argv[3]");
+                stringstream buffer(desc[i]->message);
+                t << desc[i]->message.c_str();
+//                    string contents(buffer.str());
+                t.close();
                 cout << "id:      " << desc[i]->id << endl
                      << "ip:      " << desc[i]->ip << endl
-                     << "message: " << desc[i]->message << endl
+                     << "message: \n" << desc[i]->message << endl
                      << "socket:  " << desc[i]->socket << endl
                      << "enable:  " << desc[i]->enable_message_runtime << endl;
-                tcp.clean(i);
+                Server::clean(i);
             }
         }
         usleep(1000);
@@ -81,8 +90,8 @@ int main(int argc, char **argv) {
         msg.detach();
         while (true) {
             // 循环等待接受客户端
-            if(tcp.accepted()==-1){
-                cerr<<"accept error"<<endl;
+            if (tcp.accepted() == -1) {
+                cerr << "accept error" << endl;
                 break;
             }
         }
