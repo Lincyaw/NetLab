@@ -16,10 +16,10 @@ void close_app(int s) {
     exit(0);
 }
 
-void send_client(struct desc_socket * m) {
+void send_client(struct desc_socket *m) {
     auto *desc = m;
 
-    while (1) {
+    while (true) {
         if (!tcp.is_online() && Server::get_last_closed_sockets() == desc->id) {
             cerr << "Connessione chiusa: stop send_clients( id:" << desc->id << " ip:" << desc->ip << endl;
             break;
@@ -42,10 +42,10 @@ void send_client(struct desc_socket * m) {
         sleep(time_send);
     }
 //    pthread_exit(nullptr);
+    terminate();
 }
 
-void *received(void *m) {
-    pthread_detach(pthread_self());
+void received() {
     vector<desc_socket *> desc;
     while (1) {
         desc = tcp.getMessage();
@@ -53,13 +53,9 @@ void *received(void *m) {
             if (!desc[i]->message.empty()) {
                 if (!desc[i]->message.empty() && !desc[i]->enable_message_runtime) {
                     desc[i]->enable_message_runtime = true;
-                    msg1[num_message] = thread(send_client,desc[i]);
+                    msg1[num_message] = thread(send_client, desc[i]);
                     msg1[num_message].detach();
-//                    if (pthread_create(&msg1[num_message], NULL, send_client, (void *) desc[i]) == 0) {
-//                        cerr << "ATTIVA THREAD INVIO MESSAGGI" << endl;
-//                    }
                     num_message++;
-                    // start message background thread
                 }
                 cout << "id:      " << desc[i]->id << endl
                      << "ip:      " << desc[i]->ip << endl
@@ -82,16 +78,16 @@ int main(int argc, char **argv) {
         time_send = atoi(argv[2]);
     signal(SIGINT, close_app);
 
-    pthread_t msg;
+    thread msg;
     vector<int> opts = {SO_REUSEPORT, SO_REUSEADDR};
 
     if (tcp.setup(atoi(argv[1]), opts) == 0) {
-        if (pthread_create(&msg, nullptr, received, (void *) 0) == 0) {
-            while (1) {
-                tcp.accepted();
-            }
+        msg = thread(received);
+        msg.detach();
+        while (1) {
+            tcp.accepted();
         }
     } else
-        cerr << "Errore apertura socket" << endl;
+        cerr << "Error in init socket" << endl;
     return 0;
 }
