@@ -15,40 +15,41 @@
 #include <arpa/inet.h>
 #include <mutex>
 #include <vector>
-
+#include <random>
 using namespace std;
 #define MAX_PACKET_SIZE 4096
 #define MAX_CLIENT 1000
 #define DEBUG  (1)
-struct desc_socket {
+struct socketDescriptor {
     int socket = -1;
     string ip;
     int id = -1;
     std::string message;
-    bool enable_message_runtime = false;
+    bool messageRuntime = false;
+    int key;
 };
 
 class Server {
 public:
     Server() = default;
 
-    int server_init(int port, const vector<int>& opts = vector<int>());
+    int serverInit(int port, const vector<int>& opts = vector<int>());
 
-    static vector<desc_socket *> getMessage();
+    static vector<socketDescriptor *> getMessage();
 
     int accepted();
 
-    static void server_send(const string& msg, int id);
+    static void serverSend(const string& msg, int id);
 
     static void detach(int id);
 
     static void clean(int id);
 
-    static bool is_online();
+    static bool isOnline();
 
-    static string get_ip_addr(int id);
+    static string getIpAddr(int id);
 
-    static int get_last_closed_sockets();
+    static int getLastClosedSockets();
 
     void closed() const;
 
@@ -58,16 +59,15 @@ private:
     struct sockaddr_in clientAddress{};
     // Thread Pool
     thread server_thread[MAX_CLIENT];
-//    pthread_t serverThread[MAX_CLIENT];
-    static vector<desc_socket *> new_sock_fd;
+    static vector<socketDescriptor *> newSockFd;
     static char msg[MAX_PACKET_SIZE];
-    static vector<desc_socket *> message;
-    static bool is_Online;
-    static int last_closed;
-    static int client_num;
+    static vector<socketDescriptor *> message;
+    static bool online;
+    static int lastClosed;
+    static int clientNum;
     static std::mutex mt;
-
-    static void task(desc_socket *argv);
+    static int _counter;
+    static void task(socketDescriptor *argv);
 };
 
 #endif //NETLAB_SERVER_H

@@ -17,16 +17,14 @@ using namespace std;
 
 class Client {
     int sock;
-    std::string address;
-    int port;
     struct sockaddr_in server{};
 
 public:
-    Client():sock(-1),port(0){};
+    Client():sock(-1){};
 
-    bool client_init(const string &addr, int po);
+    bool clientInit(const string &addr, int po);
 
-    bool client_send(const string &data) const;
+    bool clientSend(const string &data) const;
 
     string receive(int size = 4096) const;
 

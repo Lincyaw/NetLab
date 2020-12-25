@@ -7,70 +7,84 @@
 #include <ctime>
 #include <sstream>
 #include <fstream>
+
 Server tcp;
 thread msg1[MAX_CLIENT];
-int num_message = 0;
-int time_send = 2700;
+int numMessage = 0;
+int seconds = 2700;
 
-void close_app(int s) {
+void handler(int s) {
     tcp.closed();
+    cerr << s << endl;
     exit(0);
 }
 
-void send_client(struct desc_socket *m) {
+void sendClient(struct socketDescriptor *m) {
 
-    while (true) {
-        // server关闭了，并且最后结束的线程是该线程
-        if (!Server::is_online() && Server::get_last_closed_sockets() == m->id) {
-            cerr << "stop send_clients id:" << m->id << " ip:" << m->ip << " socket: " << m->socket << endl;
-            return;
-        }
-        std::time_t t = std::time(nullptr);
-        std::tm *now = std::localtime(&t);
-
-        std::string date =
-                to_string(now->tm_year + 1900) + "-" +
-                to_string(now->tm_mon + 1) + "-" +
-                to_string(now->tm_mday) + " " +
-                to_string(now->tm_hour) + ":" +
-                to_string(now->tm_min) + ":" +
-                to_string(now->tm_sec) + "\r\n";
-        cerr << endl << date << endl;
-        Server::server_send(date, m->id);
-        sleep(time_send);
+//    while (true) {
+    // server关闭了，并且最后结束的线程是该线程
+    if (!Server::isOnline() && Server::getLastClosedSockets() == m->key) {
+        cerr << "stop send_clients id:" << m->id << " ip:" << m->ip << " socket: " << m->socket << endl;
+        Server::serverSend("reconnect", m->id);
+        return;
     }
+#if DEBUG == 1
+//    std::time_t t = std::time(nullptr);
+//    std::tm *now = std::localtime(&t);
+//
+//    std::string date =
+//            to_string(now->tm_year + 1900) + "-" +
+//            to_string(now->tm_mon + 1) + "-" +
+//            to_string(now->tm_mday) + " " +
+//            to_string(now->tm_hour) + ":" +
+//            to_string(now->tm_min) + ":" +
+//            to_string(now->tm_sec) + "\r\n";
+//    cerr << endl << date << endl;
+#endif
+    ifstream t(m->message);
+    if (!t) {
+        Server::serverSend("error", m->id);
+        t.close();
+        return;
+//            break;
+    }
+    stringstream buffer;
+    buffer << t.rdbuf();
+    string contents(buffer.str());
+    t.close();
+    Server::serverSend(contents, m->id);
+//        sleep(seconds);
+//    }
 }
 
 void received() {
-    vector<desc_socket *> desc;
-    while (1) {
-        desc = tcp.getMessage();
+    vector<socketDescriptor *> desc;
+//    while (true) {
+    desc = Server::getMessage();
 
-        for (int i = 0; i < desc.size(); i++) {
-            if (!desc[i]->message.empty() && !desc[i]->enable_message_runtime) {
+    for (int i = 0; i < desc.size(); i++) {
+        if (!desc[i]->message.empty() && !desc[i]->messageRuntime) {
+            desc[i]->messageRuntime = true;
+            msg1[numMessage] = thread(sendClient, desc[i]);
+            msg1[numMessage].detach();
+            numMessage++;
+
+            ofstream t("argv[3]");
+            stringstream buffer(desc[i]->message);
+            t << desc[i]->message.c_str();
+            t.close();
 #if DEBUG == 1
-//                cerr << " i = " << i << endl;
+            cout << "\nid:      " << desc[i]->id << endl
+                 << "ip:      " << desc[i]->ip << endl
+                 << "message: \n" << desc[i]->message << endl
+                 << "socket:  " << desc[i]->socket << endl
+                 << "enable:  " << desc[i]->messageRuntime << endl<< endl;
 #endif
-                desc[i]->enable_message_runtime = true;
-                msg1[num_message] = thread(send_client, desc[i]);
-                msg1[num_message].detach();
-                num_message++;
-
-                ofstream t("argv[3]");
-                stringstream buffer(desc[i]->message);
-                t << desc[i]->message.c_str();
-//                    string contents(buffer.str());
-                t.close();
-                cout << "id:      " << desc[i]->id << endl
-                     << "ip:      " << desc[i]->ip << endl
-                     << "message: \n" << desc[i]->message << endl
-                     << "socket:  " << desc[i]->socket << endl
-                     << "enable:  " << desc[i]->enable_message_runtime << endl;
-                Server::clean(i);
-            }
+            Server::clean(i);
         }
-        usleep(1000);
     }
+    usleep(1000);
+//    }
 }
 
 int main(int argc, char **argv) {
@@ -79,12 +93,12 @@ int main(int argc, char **argv) {
         return 0;
     }
     if (argc == 3)
-        time_send = atoi(argv[2]);
-    signal(SIGINT, close_app);
+        seconds = atoi(argv[2]);
+    signal(SIGINT, handler);
 //SO_REUSEPORT支持多个进程或者线程绑定到同一端口，提高服务器程序的性能
 //SO_REUSEADDR同一地址
     vector<int> opts = {SO_REUSEPORT, SO_REUSEADDR};
-    if (tcp.server_init(atoi(argv[1]), opts) == 0) {
+    if (tcp.serverInit(atoi(argv[1]), opts) == 0) {
         // server 创建成功之后，需要监听客户端信息
         thread msg(received);
         msg.detach();
