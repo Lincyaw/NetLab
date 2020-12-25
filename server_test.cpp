@@ -59,32 +59,31 @@ void sendClient(struct socketDescriptor *m) {
 
 void received() {
     vector<socketDescriptor *> desc;
-//    while (true) {
-    desc = Server::getMessage();
+    while (true) {
+        desc = Server::getMessage();
+        for (int i = 0; i < desc.size(); i++) {
+            if (!desc[i]->message.empty() && !desc[i]->messageRuntime) {
+                desc[i]->messageRuntime = true;
+                msg1[numMessage] = thread(sendClient, desc[i]);
+                msg1[numMessage].detach();
+                numMessage++;
 
-    for (int i = 0; i < desc.size(); i++) {
-        if (!desc[i]->message.empty() && !desc[i]->messageRuntime) {
-            desc[i]->messageRuntime = true;
-            msg1[numMessage] = thread(sendClient, desc[i]);
-            msg1[numMessage].detach();
-            numMessage++;
-
-            ofstream t("argv[3]");
-            stringstream buffer(desc[i]->message);
-            t << desc[i]->message.c_str();
-            t.close();
+                ofstream t("argv[3]");
+                stringstream buffer(desc[i]->message);
+                t << desc[i]->message.c_str();
+                t.close();
 #if DEBUG == 1
-            cout << "\nid:      " << desc[i]->id << endl
-                 << "ip:      " << desc[i]->ip << endl
-                 << "message: \n" << desc[i]->message << endl
-                 << "socket:  " << desc[i]->socket << endl
-                 << "enable:  " << desc[i]->messageRuntime << endl<< endl;
+                cout << "\nid:      " << desc[i]->id << endl
+                     << "ip:      " << desc[i]->ip << endl
+                     << "message: \n" << desc[i]->message << endl
+                     << "socket:  " << desc[i]->socket << endl
+                     << "enable:  " << desc[i]->messageRuntime << endl << endl;
 #endif
-            Server::clean(i);
+                Server::clean(i);
+            }
         }
+        usleep(1000);
     }
-    usleep(1000);
-//    }
 }
 
 int main(int argc, char **argv) {
