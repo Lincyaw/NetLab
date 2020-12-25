@@ -19,7 +19,7 @@
 using namespace std;
 #define MAX_PACKET_SIZE 4096
 #define MAX_CLIENT 1000
-#define DEBUG  (1)
+#define DEBUG  (0)
 struct socketDescriptor {
     int socket = -1;
     string ip;
@@ -65,7 +65,7 @@ private:
     static bool online;
     static int lastClosed;
     static int clientNum;
-    static std::mutex mt;
+    static mutex mt;
     static int _counter;
     static void task(socketDescriptor *argv);
 };

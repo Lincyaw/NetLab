@@ -21,7 +21,6 @@ void handler(int s) {
 
 void sendClient(struct socketDescriptor *m) {
 
-//    while (true) {
     // server关闭了，并且最后结束的线程是该线程
     if (!Server::isOnline() && Server::getLastClosedSockets() == m->key) {
         cerr << "stop send_clients id:" << m->id << " ip:" << m->ip << " socket: " << m->socket << endl;
@@ -41,20 +40,33 @@ void sendClient(struct socketDescriptor *m) {
 //            to_string(now->tm_sec) + "\r\n";
 //    cerr << endl << date << endl;
 #endif
+    mutex mt;
+    lock_guard<mutex> guard(mt);
     ifstream t(m->message);
     if (!t) {
         Server::serverSend("error", m->id);
         t.close();
         return;
-//            break;
     }
     stringstream buffer;
     buffer << t.rdbuf();
     string contents(buffer.str());
     t.close();
     Server::serverSend(contents, m->id);
-//        sleep(seconds);
-//    }
+//        sleep(1000);
+}
+
+char *simple_tok(char *p, char d) {
+    if (p == nullptr) {
+        return nullptr;
+    }
+    char *t = p;
+    while (*t != '\0' && *t != d)
+        t++;
+    if (*t == '\0')
+        return p;
+    *t = '\0';
+    return t + 1;
 }
 
 void received() {
@@ -68,10 +80,25 @@ void received() {
                 msg1[numMessage].detach();
                 numMessage++;
 
-                ofstream t("argv[3]");
-                stringstream buffer(desc[i]->message);
-                t << desc[i]->message.c_str();
-                t.close();
+                char *filename = (char *) (desc[i]->message.c_str());
+                if (filename[0] == '^' && filename[1] == '@') {
+                    filename += 2;
+#if DEBUG == 1
+                    cout << filename << endl;
+#endif
+                    char *file = simple_tok(filename, '\n');
+#if DEBUG == 1
+
+                    cout << filename << endl << endl;
+                    cout << file << endl;
+#endif
+                    mutex mt;
+                    lock_guard<mutex> guard(mt);
+                    ofstream t(filename);
+                    t << file;
+                    t.close();
+                }
+
 #if DEBUG == 1
                 cout << "\nid:      " << desc[i]->id << endl
                      << "ip:      " << desc[i]->ip << endl
