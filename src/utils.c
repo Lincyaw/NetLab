@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #define IPTOSBUFFERS 12
 
 /**
@@ -10,8 +11,7 @@
  * @param ip ip地址
  * @return char* 生成的字符串
  */
-char *iptos(uint8_t *ip)
-{
+char *iptos(uint8_t *ip) {
     static char output[IPTOSBUFFERS][3 * 4 + 3 + 1];
     static short which;
     which = (which + 1 == IPTOSBUFFERS ? 0 : which + 1);
@@ -25,8 +25,7 @@ char *iptos(uint8_t *ip)
  * @param buf 要初始化的buffer
  * @param len 长度
  */
-void buf_init(buf_t *buf, int len)
-{
+void buf_init(buf_t *buf, int len) {
     buf->len = len;
     buf->data = buf->payload + BUF_MAX_LEN - len;
 }
@@ -37,8 +36,7 @@ void buf_init(buf_t *buf, int len)
  * @param buf 要修改的buffer
  * @param len 增加的长度
  */
-void buf_add_header(buf_t *buf, int len)
-{
+void buf_add_header(buf_t *buf, int len) {
     buf->len += len;
     buf->data -= len;
 }
@@ -49,8 +47,7 @@ void buf_add_header(buf_t *buf, int len)
  * @param buf 要修改的buffer
  * @param len 减少的长度
  */
-void buf_remove_header(buf_t *buf, int len)
-{
+void buf_remove_header(buf_t *buf, int len) {
     buf->len -= len;
     buf->data += len;
 }
@@ -61,27 +58,22 @@ void buf_remove_header(buf_t *buf, int len)
  * @param dst 目的buffer
  * @param src 源buffer
  */
-void buf_copy(buf_t *dst, buf_t *src)
-{
+void buf_copy(buf_t *dst, buf_t *src) {
     buf_init(dst, src->len);
     memcpy(dst->payload, src->payload, BUF_MAX_LEN);
 }
 
-void printBuf(buf_t *buf)
-{
+void printBuf(buf_t *buf) {
 
     printf("\n{\nbuf.len = %d\n", buf->len);
     printf("buf.data = \n\t");
     unsigned char *pointer = buf->data;
-    for (int i = 0; i < buf->len; i++)
-    {
+    for (int i = 0; i < buf->len; i++) {
         printf("%02x ", pointer[i]);
-        if ((i + 1) % 4 == 0)
-        {
+        if ((i + 1) % 4 == 0) {
             printf(" ");
         }
-        if ((i + 1) % 8 == 0)
-        {
+        if ((i + 1) % 8 == 0) {
             printf("\n\t");
         }
     }
@@ -101,23 +93,23 @@ void printBuf(buf_t *buf)
  * @param len 要计算的长度
  * @return uint16_t 校验和
  */
-uint16_t checksum16(uint16_t *buf, int len)
-{
+uint16_t checksum16(uint16_t *buf, int len) {
     // TODO
     uint32_t checksum = 0;
     uint16_t *tempBuf = buf;
-    while (len > 1)
-    {
-        checksum += (uint32_t)(*tempBuf);
+    while (len > 1) {
+        checksum += (uint32_t) (*tempBuf);
         tempBuf++;
         len -= sizeof(uint16_t);
     }
-    // if (len)
-    // {
-    //     checksum += *(uint8_t *)tempBuf;
-    // }
-    checksum = (checksum >> 16) + (checksum & 0xffff);
-    checksum += (checksum >> 16);
-    uint16_t ans = checksum & 0x0000ffff;
-    return ~ans;
+    if (len > 0) {
+        char remain[2] = {0};
+        remain[0] = *tempBuf;
+        checksum += *(uint8_t *) remain;
+    }
+
+    while (checksum >> 16) {
+        checksum = (checksum & 0xffff) + (checksum >> 16);
+    }
+    return ~checksum;
 }
