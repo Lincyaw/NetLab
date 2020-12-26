@@ -19,32 +19,33 @@ void handler(int s) {
     exit(0);
 }
 
-void sendClient(struct socketDescriptor *m) {
-
+void sendClient(const struct socketDescriptor m) {
+auto file = m.message;
     // server关闭了，并且最后结束的线程是该线程
-    if (!Server::isOnline() && Server::getLastClosedSockets() == m->key) {
-        cerr << "stop send_clients id:" << m->id << " ip:" << m->ip << " socket: " << m->socket << endl;
-        Server::serverSend("reconnect", m->id);
+    if (!Server::isOnline() && Server::getLastClosedSockets() == m.key) {
+        cerr << "stop send_clients id:" << m.id << " ip:" << m.ip << " socket: " << m.socket << endl;
+        Server::serverSend("reconnect", m.id);
         return;
     }
 #if DEBUG == 1
-//    std::time_t t = std::time(nullptr);
-//    std::tm *now = std::localtime(&t);
-//
-//    std::string date =
-//            to_string(now->tm_year + 1900) + "-" +
-//            to_string(now->tm_mon + 1) + "-" +
-//            to_string(now->tm_mday) + " " +
-//            to_string(now->tm_hour) + ":" +
-//            to_string(now->tm_min) + ":" +
-//            to_string(now->tm_sec) + "\r\n";
-//    cerr << endl << date << endl;
+    //    std::time_t t = std::time(nullptr);
+    //    std::tm *now = std::localtime(&t);
+    //
+    //    std::string date =
+    //            to_string(now->tm_year + 1900) + "-" +
+    //            to_string(now->tm_mon + 1) + "-" +
+    //            to_string(now->tm_mday) + " " +
+    //            to_string(now->tm_hour) + ":" +
+    //            to_string(now->tm_min) + ":" +
+    //            to_string(now->tm_sec) + "\r\n";
+    //    cerr << endl << date << endl;
 #endif
-    mutex mt;
-    lock_guard<mutex> guard(mt);
-    ifstream t(m->message);
+//    mutex mt;
+//    lock_guard<mutex> guard(mt);
+
+    ifstream t(file);
     if (!t) {
-        Server::serverSend("error", m->id);
+        Server::serverSend("error", m.id);
         t.close();
         return;
     }
@@ -52,7 +53,7 @@ void sendClient(struct socketDescriptor *m) {
     buffer << t.rdbuf();
     string contents(buffer.str());
     t.close();
-    Server::serverSend(contents, m->id);
+    Server::serverSend(contents, m.id);
 //        sleep(1000);
 }
 
@@ -75,10 +76,7 @@ void received() {
         desc = Server::getMessage();
         for (int i = 0; i < desc.size(); i++) {
             if (!desc[i]->message.empty() && !desc[i]->messageRuntime) {
-                desc[i]->messageRuntime = true;
-                msg1[numMessage] = thread(sendClient, desc[i]);
-                msg1[numMessage].detach();
-                numMessage++;
+
 
                 char *filename = (char *) (desc[i]->message.c_str());
                 if (filename[0] == '^' && filename[1] == '@') {
@@ -97,6 +95,11 @@ void received() {
                     ofstream t(filename);
                     t << file;
                     t.close();
+                } else {
+                    desc[i]->messageRuntime = true;
+                    msg1[numMessage] = thread(sendClient, *desc[i]);
+                    msg1[numMessage].detach();
+                    numMessage++;
                 }
 
 #if DEBUG == 1
